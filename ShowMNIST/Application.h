@@ -4,14 +4,24 @@
 
 class Application
 {
+private:
+
+	const HINSTANCE instance;
+
+	static LRESULT CALLBACK MainWindowProcedure(
+		HWND hwnd,
+		UINT uMsg,
+		WPARAM wParam,
+		LPARAM lParam);
+
 public:
 
-	Application();
+	Application(const HINSTANCE _instance);
 
 	~Application();
 
-	WPARAM run();
+	ATOM registerMainWindowClass();
 
-private:
+	WPARAM run();
 
 };
