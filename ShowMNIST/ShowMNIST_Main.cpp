@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Window.h"
 
 HWND hwndMain;
 
@@ -12,16 +13,11 @@ int APIENTRY WinMain(
 
     application.registerMainWindowClass();
 
-    hwndMain = CreateWindow(L"MainWndClass", L"BasicWindow",
-        WS_OVERLAPPEDWINDOW, 600, 350,
-        800, 500, (HWND)NULL,
-        (HMENU)NULL, hInstance, (LPVOID)NULL);
+    Window mainWindow(hInstance);
 
-    if (!hwndMain)
-        return FALSE;
+    mainWindow.show(nCmdShow);
 
-    ShowWindow(hwndMain, nCmdShow);
-    UpdateWindow(hwndMain);
+    mainWindow.update();
 
     return application.run();
 }
