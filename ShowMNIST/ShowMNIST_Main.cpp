@@ -11,7 +11,7 @@ int APIENTRY WinMain(
 {
     Application application(hInstance);
 
-    application.registerMainWindowClass();
+    application.registerMainWindowClass(Window::getWindowProcedure());
 
     Window mainWindow(hInstance);
 

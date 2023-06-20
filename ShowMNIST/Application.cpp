@@ -9,38 +9,13 @@ Application::~Application()
 {
 }
 
-LRESULT CALLBACK Application::MainWindowProcedure(
-    HWND hwnd,
-    UINT uMsg,
-    WPARAM wParam,
-    LPARAM lParam)
-{
-    switch (uMsg)
-    {
-    case WM_CREATE:
-        return 0;
 
-    case WM_PAINT:
-        return 0;
-
-    case WM_SIZE:
-        return 0;
-
-    case WM_DESTROY:
-        return 0;
-
-    default:
-        return DefWindowProc(hwnd, uMsg, wParam, lParam);
-    }
-    return 0;
-}
-
-ATOM Application::registerMainWindowClass()
+ATOM Application::registerMainWindowClass(WNDPROC mainWindowProcedure)
 {
     WNDCLASS wc;
 
     wc.style = 0;
-    wc.lpfnWndProc = (WNDPROC)MainWindowProcedure;
+    wc.lpfnWndProc = mainWindowProcedure;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = instance;

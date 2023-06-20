@@ -12,6 +12,38 @@ Window::~Window()
 {
 }
 
+WNDPROC Window::getWindowProcedure()
+{
+    return (WNDPROC)MainWindowProcedure;
+}
+
+LRESULT CALLBACK Window::MainWindowProcedure(
+    HWND hwnd,
+    UINT uMsg,
+    WPARAM wParam,
+    LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case WM_CREATE:
+        return 0;
+
+    case WM_PAINT:
+        return 0;
+
+    case WM_SIZE:
+        return 0;
+
+    case WM_DESTROY:
+        return 0;
+
+    default:
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    }
+    return 0;
+}
+
+
 void Window::show(int showCommand)
 {
     ShowWindow(handle, showCommand);
