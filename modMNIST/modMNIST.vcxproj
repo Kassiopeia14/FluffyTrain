@@ -18,11 +18,17 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MNISTLoader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="MNISTLoader.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{c91379a8-f7bc-4890-a2dc-01b41dbdeb6b}</ProjectGuid>
-    <RootNamespace>ShowMNIST</RootNamespace>
+    <ProjectGuid>{4a76623d-af4b-439f-a858-aff5dd6dc446}</ProjectGuid>
+    <RootNamespace>modMNIST</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -40,7 +46,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -104,10 +110,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -127,23 +132,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="MNISTMessageHandler.cpp" />
-    <ClCompile Include="Painter.cpp" />
-    <ClCompile Include="ShowMNIST_Main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="MNISTMessageHandler.h" />
-    <ClInclude Include="Painter.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\modMNIST\modMNIST.vcxproj">
-      <Project>{4a76623d-af4b-439f-a858-aff5dd6dc446}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modWindows\modWindows.vcxproj">
-      <Project>{8a921424-3146-415e-a3db-7712ed4c7cbb}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

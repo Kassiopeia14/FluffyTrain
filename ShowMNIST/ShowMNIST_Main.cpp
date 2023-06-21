@@ -15,16 +15,10 @@ int APIENTRY WinMain(
     MNISTMessageHandler mnistMessageHandler;
 
     Window<MNISTMessageHandler> mainWindow(hInstance, &mnistMessageHandler);
-    Window<MNISTMessageHandler> mainWindow1(hInstance, &mnistMessageHandler);
 
     mainWindow.show(nCmdShow);
 
     mainWindow.update();
-
-    mainWindow1.show(nCmdShow);
-
-    mainWindow1.update();
-
 
     return application.run();
 }
