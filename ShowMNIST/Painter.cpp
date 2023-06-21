@@ -31,6 +31,8 @@ void Painter::paintImage(
 			HBRUSH brush = CreateSolidBrush(RGB(color, color, color));
 
 			FillRect(deviceContext, &retangle, brush);
+
+			DeleteObject(brush);
 		}
 	}
 }

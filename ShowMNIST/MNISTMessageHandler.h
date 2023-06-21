@@ -9,6 +9,9 @@ class MNISTMessageHandler
 private:
 
 	std::string fileName;
+
+	size_t imageCounter;
+
 	MNISTLoader mnistLoader;
 
 	Painter painter;

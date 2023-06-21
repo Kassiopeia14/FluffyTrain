@@ -36,6 +36,11 @@ public:
 	void show(int showCommand);
 
 	void update();
+
+    void refresh();
+
+    void draw();
+
 };
 
 template<class MessageHandler>
@@ -131,4 +136,20 @@ template<class MessageHandler>
 void Window<MessageHandler>::update()
 {
     UpdateWindow(handle);
+}
+
+template<class MessageHandler>
+void Window<MessageHandler>::refresh()
+{
+    InvalidateRect(handle, 0, true);
+}
+
+template<class MessageHandler>
+void Window<MessageHandler>::draw()
+{
+    HDC deviceContext = GetDC(handle);
+
+    messageHandler->onPaint(deviceContext);
+
+    ReleaseDC(handle, deviceContext);
 }

@@ -31,20 +31,30 @@ ATOM Application::registerMainWindowClass(WNDPROC mainWindowProcedure)
         return FALSE;
 }
 
-WPARAM Application::run()
+WPARAM Application::run(std::function<void()> task)
 {
-    MSG msg;
+    MSG msg = {};
     BOOL bRet;
 
-    while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0)
+    std::chrono::time_point<std::chrono::system_clock> begin = std::chrono::system_clock::now();
+
+    while (msg.message != WM_QUIT)
     {
-        if (bRet == -1)
-        {
-        }
-        else
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+        }
+        else
+        {
+            std::chrono::time_point<std::chrono::system_clock> checkPoint = std::chrono::system_clock::now();
+
+            if ((checkPoint - begin).count() > 10000000.0)
+            {
+                begin = checkPoint;
+
+                task();
+            }
         }
     }
 

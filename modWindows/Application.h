@@ -1,6 +1,8 @@
 #pragma once
 
 #include <windows.h>
+#include <functional>
+#include <chrono>
 
 class Application
 {
@@ -16,6 +18,6 @@ public:
 
 	ATOM registerMainWindowClass(WNDPROC mainWindowProcedure);
 
-	WPARAM run();
+	WPARAM run(std::function<void()> task);
 
 };

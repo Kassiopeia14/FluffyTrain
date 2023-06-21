@@ -20,5 +20,8 @@ int APIENTRY WinMain(
 
     mainWindow.update();
 
-    return application.run();
+    return application.run([&]() -> void 
+    {
+        mainWindow.refresh();
+    });
 }
