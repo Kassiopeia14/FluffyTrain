@@ -23,12 +23,19 @@ private:
 
     static void close();
 
+    HWND makeWindow(
+        HINSTANCE applicationInstance,
+        const LONG clientHeight,
+        const LONG clientWidth);
+
 	bool onPaint();
 
 public:
 
 	Window(
         HINSTANCE applicationInstance,
+        const LONG clientHeight,
+        const LONG clientWidth,
         MessageHandler* _messageHandler);
 
 	~Window();
@@ -48,19 +55,43 @@ public:
 template<class MessageHandler>
 Window<MessageHandler>::Window(
     HINSTANCE applicationInstance,
+    const LONG clientHeight,
+    const LONG clientWidth,
     MessageHandler* _messageHandler) :
     messageHandler(_messageHandler),
-    handle(CreateWindow(L"MainWndClass", L"BasicWindow",
-        WS_OVERLAPPEDWINDOW, 600, 350,
-        800, 500, (HWND)NULL,
-        (HMENU)NULL, applicationInstance, (LPVOID)this))
+    handle(makeWindow(
+        applicationInstance,
+        clientHeight,
+        clientWidth))
 {
-
 }
 
 template<class MessageHandler>
 Window<MessageHandler>::~Window()
 {
+}
+
+template<class MessageHandler>
+HWND Window<MessageHandler>::makeWindow(
+    HINSTANCE applicationInstance,
+    const LONG clientHeight,
+    const LONG clientWidth)
+{
+    RECT rect{
+        .left = 0,
+        .top = 0,
+        .right = clientHeight,
+        .bottom = clientWidth
+    };
+
+    AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+
+    HWND windowHandle = CreateWindow(L"MainWndClass", L"BasicWindow",
+        WS_OVERLAPPEDWINDOW, 600, 350,
+        rect.right - rect.left, rect.bottom - rect.top, (HWND)NULL,
+        (HMENU)NULL, applicationInstance, (LPVOID)this);
+
+    return windowHandle;
 }
 
 template<class MessageHandler>

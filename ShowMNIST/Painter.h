@@ -2,17 +2,20 @@
 
 #include <array>
 #include <vector>
+#include <string>
 #include <windows.h>
 
 #include "../modWindows/Brush.h"
 
 class Painter
 {
-private:
+public:
 
 	static const size_t
 		colorCount = 256,
 		pixelSide = 8;
+
+private:
 
 	std::array<COLORREF, colorCount> grayColors;
 
@@ -29,5 +32,9 @@ public:
 		HDC deviceContext,
 		const size_t imageSide,
 		std::vector<unsigned char> imageVector);
+	
+	void paintText(
+		HDC deviceContext,
+		const std::string text);
 
 };

@@ -14,7 +14,11 @@ int APIENTRY WinMain(
 
     MNISTMessageHandler mnistMessageHandler;
 
-    Window<MNISTMessageHandler> mainWindow(hInstance, &mnistMessageHandler);
+    Window<MNISTMessageHandler> mainWindow(
+        hInstance, 
+        (LONG)(MNISTLoader::imageSide * Painter::pixelSide),
+        (LONG)(MNISTLoader::imageSide * Painter::pixelSide),
+        &mnistMessageHandler);
 
     mainWindow.show(nCmdShow);
 

@@ -17,4 +17,6 @@ void MNISTMessageHandler::onPaint(HDC deviceContext)
 	imageCounter = (imageCounter + 1) % 10000;
 
 	painter.paintImage(deviceContext, MNISTLoader::imageSide, mnistLoader.getImage(imageCounter));
+
+	painter.paintText(deviceContext, "abv");
 }

@@ -45,3 +45,14 @@ void Painter::paintImage(
 		}
 	}
 }
+
+void Painter::paintText(
+	HDC deviceContext,
+	const std::string text)
+{
+	SetBkMode(deviceContext, TRANSPARENT);
+
+	SetTextColor(deviceContext, RGB(255, 0, 0));
+
+	TextOutA(deviceContext, 8, 8, &text[0], text.length());
+}
