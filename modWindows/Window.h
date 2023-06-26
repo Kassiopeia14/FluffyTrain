@@ -21,7 +21,7 @@ private:
 
 	static bool paint(HWND hwnd);
 
-    static void close();
+    static void close(HWND hwnd);
 
     HWND makeWindow(
         HINSTANCE applicationInstance,
@@ -29,6 +29,8 @@ private:
         const LONG clientWidth);
 
 	bool onPaint();
+
+    void onClose();
 
 public:
 
@@ -121,7 +123,7 @@ LRESULT CALLBACK Window<MessageHandler>::MainWindowProcedure(
         return 0;
 
     case WM_CLOSE:
-        close();
+        close(hwnd);
         return 0;
 
     case WM_DESTROY:
@@ -152,6 +154,16 @@ bool Window<MessageHandler>::paint(HWND hwnd)
 }
 
 template<class MessageHandler>
+void Window<MessageHandler>::close(HWND hwnd)
+{
+    Window* window = (Window*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+
+    window->onClose();
+
+    PostQuitMessage(0);
+}
+
+template<class MessageHandler>
 bool Window<MessageHandler>::onPaint()
 {
     PAINTSTRUCT paintData;
@@ -161,6 +173,12 @@ bool Window<MessageHandler>::onPaint()
     messageHandler->onPaint(deviceContext);
 
     return EndPaint(handle, &paintData);
+}
+
+template<class MessageHandler>
+void Window<MessageHandler>::onClose()
+{
+    messageHandler->onClose();
 }
 
 template<class MessageHandler>
@@ -189,10 +207,4 @@ void Window<MessageHandler>::draw()
     messageHandler->onPaint(deviceContext);
 
     ReleaseDC(handle, deviceContext);
-}
-
-template<class MessageHandler>
-void Window<MessageHandler>::close()
-{
-    PostQuitMessage(0);
 }

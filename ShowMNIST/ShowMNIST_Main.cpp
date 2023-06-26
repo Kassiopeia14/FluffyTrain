@@ -1,6 +1,8 @@
 #include "../modWindows/Application.h"
 #include "../modWindows/Window.h"
-#include "MNISTMessageHandler.h"
+#include "MessageHandler.h"
+#include "../modMNIST/MNISTLoader.h"
+#include "../modMNISTClassifier/MNISTClassifier.h"
 
 int APIENTRY WinMain(
     HINSTANCE hInstance, 
@@ -10,15 +12,24 @@ int APIENTRY WinMain(
 {
     Application application(hInstance);
 
-    application.registerMainWindowClass(Window<MNISTMessageHandler>::getWindowProcedure());
+    application.registerMainWindowClass(Window<MessageHandler>::getWindowProcedure());
 
-    MNISTMessageHandler mnistMessageHandler;
+    std::string fileName("C:\\Github\\FluffyTrain\\mnist\\t10k-images.idx3-ubyte");
+    MNISTLoader mnistLoader(fileName);
 
-    Window<MNISTMessageHandler> mainWindow(
+    RandomEngine randomEngine;
+
+    std::atomic<bool> running(true);
+
+    MNISTClassifier<RandomEngine> mnistClassifier(randomEngine, mnistLoader, running);
+
+    MessageHandler messageHandler(mnistClassifier, running);
+
+    Window<MessageHandler> mainWindow(
         hInstance, 
         (LONG)(MNISTLoader::imageSide * Painter::pixelSide),
         (LONG)(MNISTLoader::imageSide * Painter::pixelSide),
-        &mnistMessageHandler);
+        &messageHandler);
 
     mainWindow.show(nCmdShow);
 

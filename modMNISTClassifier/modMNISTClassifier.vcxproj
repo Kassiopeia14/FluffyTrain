@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{c91379a8-f7bc-4890-a2dc-01b41dbdeb6b}</ProjectGuid>
-    <RootNamespace>ShowMNIST</RootNamespace>
+    <ProjectGuid>{498b772d-35fe-42ee-9de9-856eeae45487}</ProjectGuid>
+    <RootNamespace>modMNISTClassifier</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -104,10 +104,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -128,24 +127,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="MessageHandler.cpp" />
-    <ClCompile Include="Painter.cpp" />
-    <ClCompile Include="ShowMNIST_Main.cpp" />
+    <ClInclude Include="MNISTClassifier.h" />
+    <ClInclude Include="RandomEngine.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MessageHandler.h" />
-    <ClInclude Include="Painter.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\modMNISTClassifier\modMNISTClassifier.vcxproj">
-      <Project>{498b772d-35fe-42ee-9de9-856eeae45487}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modMNIST\modMNIST.vcxproj">
-      <Project>{4a76623d-af4b-439f-a858-aff5dd6dc446}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\modWindows\modWindows.vcxproj">
-      <Project>{8a921424-3146-415e-a3db-7712ed4c7cbb}</Project>
-    </ProjectReference>
+    <ClCompile Include="RandomEngine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
