@@ -19,7 +19,7 @@ private:
 
 	const size_t fileSize;
 
-	std::vector<char> fileData;
+	std::vector<unsigned char> fileData;
 
 	static size_t defineFileSize(std::ifstream& file);
 
@@ -29,6 +29,6 @@ public:
 	
 	~MNISTLoader();
 
-	std::vector<char> getImage(const size_t number);
+	std::vector<unsigned char> getImage(const size_t number);
 
 };

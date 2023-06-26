@@ -23,9 +23,9 @@ size_t MNISTLoader::defineFileSize(std::ifstream& _file)
     return _file.tellg();
 }
 
-std::vector<char> MNISTLoader::getImage(const size_t imageNumber)
+std::vector<unsigned char> MNISTLoader::getImage(const size_t imageNumber)
 {
-    std::vector<char> image(imageSize);
+    std::vector<unsigned char> image(imageSize);
 
     memcpy(&image[0], &fileData[imageNumber * imageSize + offset], imageSize);
 

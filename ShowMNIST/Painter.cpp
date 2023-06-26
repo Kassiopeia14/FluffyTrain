@@ -1,6 +1,20 @@
 #include "Painter.h"
 
-Painter::Painter()
+std::array<COLORREF, Painter::colorCount> Painter::makeGrayColors()
+{
+	std::array<COLORREF, colorCount> result;
+
+	for (int i = 0; i < colorCount; i++)
+	{
+		result[i] = RGB(i, i, i);
+	}
+
+	return result;
+}
+
+Painter::Painter():
+	grayColors(makeGrayColors()),
+	grayBrushes(grayColors.begin(), grayColors.end())
 {
 }
 
@@ -8,11 +22,10 @@ Painter::~Painter()
 {
 }
 
-
 void Painter::paintImage(
 	HDC deviceContext,
 	const size_t imageSide,
-	std::vector<char> imageVector)
+	std::vector<unsigned char> imageVector)
 {
 	for (int x = 0; x < imageSide; x++)
 	{
@@ -26,13 +39,9 @@ void Painter::paintImage(
 
 			const size_t index = y * imageSide + x;
 
-			const char color = imageVector[index];
+			const unsigned char color = imageVector[index];
 
-			HBRUSH brush = CreateSolidBrush(RGB(color, color, color));
-
-			FillRect(deviceContext, &retangle, brush);
-
-			DeleteObject(brush);
+			FillRect(deviceContext, &retangle, grayBrushes[color].getHandle());
 		}
 	}
 }

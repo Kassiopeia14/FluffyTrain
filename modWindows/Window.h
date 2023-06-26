@@ -7,9 +7,9 @@ class Window
 {
 private:
 
-	HWND handle;
-
     MessageHandler* messageHandler;
+
+    HWND handle;
 
 	static LRESULT CALLBACK MainWindowProcedure(
 		HWND hwnd,
@@ -20,6 +20,8 @@ private:
 	static void create(HWND hwnd, LPARAM lParam);
 
 	static bool paint(HWND hwnd);
+
+    static void close();
 
 	bool onPaint();
 
@@ -87,6 +89,10 @@ LRESULT CALLBACK Window<MessageHandler>::MainWindowProcedure(
     case WM_SIZE:
         return 0;
 
+    case WM_CLOSE:
+        close();
+        return 0;
+
     case WM_DESTROY:
         return 0;
 
@@ -152,4 +158,10 @@ void Window<MessageHandler>::draw()
     messageHandler->onPaint(deviceContext);
 
     ReleaseDC(handle, deviceContext);
+}
+
+template<class MessageHandler>
+void Window<MessageHandler>::close()
+{
+    PostQuitMessage(0);
 }
