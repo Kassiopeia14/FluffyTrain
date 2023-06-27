@@ -11,8 +11,11 @@ struct ClassifierState
 	std::vector<unsigned char> image;
 
 	size_t 
-		label,
+		realLabel,
+		predictedLabel,
 		number;
+
+	bool classified;
 };
 
 template<class Engine>
@@ -31,7 +34,11 @@ private:
 
 	size_t
 		currentResult,
-		currentImageNumber;
+		currentImageNumber,
+		currentRealLabel,
+		currentHitCount;
+
+	bool classified;
 
 	std::thread workThread;
 
@@ -84,6 +91,7 @@ void MNISTClassifier<Engine>::train()
 {
 	const size_t trainImageCount(mnistLoader.getTrainImagesCount());
 	currentImageNumber = 0;
+	classified = false;
 
 	while (running.load() && (currentImageNumber < trainImageCount))
 	{
@@ -97,6 +105,10 @@ void MNISTClassifier<Engine>::train()
 
 			currentResult = result;
 
+			currentRealLabel = mnistLoader.getTrainLabel(currentImageNumber);
+
+			classified = true;
+
 			lock.clear();
 		}
 
@@ -109,6 +121,7 @@ void MNISTClassifier<Engine>::test()
 {
 	const size_t testImageCount(mnistLoader.getTestImagesCount());
 	currentImageNumber = 0;
+	classified = false;
 
 	while (running.load() && (currentImageNumber < testImageCount))
 	{
@@ -121,6 +134,10 @@ void MNISTClassifier<Engine>::test()
 			memcpy(&currentImage[0], &image[0], image.size());
 
 			currentResult = result;
+
+			currentRealLabel = mnistLoader.getTestLabel(currentImageNumber);
+
+			classified = true;
 
 			lock.clear();
 		}
@@ -140,8 +157,10 @@ ClassifierState MNISTClassifier<Engine>::getCurrentState()
 	ClassifierState classifierState
 	{
 		.image = std::vector<unsigned char>(currentImage.size()),
-		.label = currentResult,
-		.number = currentImageNumber
+		.realLabel = currentRealLabel,
+		.predictedLabel = currentResult,
+		.number = currentImageNumber,
+		.classified = classified
 	};
 
 	memcpy(&classifierState.image[0], &currentImage[0], currentImage.size());

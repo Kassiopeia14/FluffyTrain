@@ -11,27 +11,36 @@ public:
 	static const size_t
 		imageSide = 28,
 		imageSize = imageSide * imageSide,
-		offset = 16;
+		imagesOffset = 16,
+		labelsOffset = 8;
 
 private:
 
 	const std::string
 		trainImagesFileName,
-		testImagesFileName;
+		testImagesFileName,
+		trainLabelsFileName,
+		testLabelsFileName;
 
 	std::ifstream 
 		trainImagesFile,
-		testImagesFile;
+		testImagesFile,
+		trainLabelsFile,
+		testLabelsFile;
 
 	const size_t 
 		trainImagesFileSize,
 		testImagesFileSize,
+		trainLabelsFileSize,
+		testLabelsFileSize,
 		trainImagesCount,
 		testImagesCount;
 
 	std::vector<unsigned char> 
 		trainImagesData,
-		testImagesData;
+		testImagesData,
+		trainLabelsData,
+		testLabelsData;
 
 	static size_t defineFileSize(std::ifstream& file);
 
@@ -48,4 +57,8 @@ public:
 	std::vector<unsigned char> getTrainImage(const size_t number);
 
 	std::vector<unsigned char> getTestImage(const size_t number);
+
+	size_t getTrainLabel(const size_t number);
+
+	size_t getTestLabel(const size_t number);
 };

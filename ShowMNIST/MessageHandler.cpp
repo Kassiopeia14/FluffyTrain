@@ -17,17 +17,21 @@ void MessageHandler::onPaint(HDC deviceContext)
 {
 	ClassifierState currentState(mnistClassifier.getCurrentState());
 
-	painter.paintImage(deviceContext, currentState.image);
+	if (currentState.classified)
+	{
+		painter.paintImage(deviceContext, currentState.image);
 
-	painter.beginText();
-	
-	std::string labelText("label: " + std::to_string(currentState.label));
-	painter.paintText(deviceContext, labelText);
+		painter.beginText();
 
-	std::string numberText("#: " + std::to_string(currentState.number));
-	painter.paintText(deviceContext, numberText);
+		std::string predictedLabelText("predicted label: " + std::to_string(currentState.predictedLabel));
+		painter.paintText(deviceContext, predictedLabelText);
 
+		std::string realLabelText("real label: " + std::to_string(currentState.realLabel));
+		painter.paintText(deviceContext, realLabelText);
 
+		std::string numberText("#: " + std::to_string(currentState.number));
+		painter.paintText(deviceContext, numberText);
+	}
 }
 
 void MessageHandler::onClose()
