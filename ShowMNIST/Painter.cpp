@@ -31,17 +31,20 @@ void Painter::paintImage(
 	{
 		for (int y = 0; y < imageSide; y++)
 		{
-			const RECT retangle{ 
-				.left = (LONG)(x * pixelSide), 
-				.top = (LONG)(y * pixelSide), 
-				.right = (LONG)(x * pixelSide + pixelSide), 
-				.bottom = (LONG)(y * pixelSide + pixelSide) };
-
 			const size_t index = y * imageSide + x;
 
 			const unsigned char color = imageVector[index];
 
-			FillRect(deviceContext, &retangle, grayBrushes[color].getHandle());
+			if (color > 0)
+			{
+				const RECT retangle{
+					.left = (LONG)(x * pixelSide),
+					.top = (LONG)(y * pixelSide),
+					.right = (LONG)(x * pixelSide + pixelSide),
+					.bottom = (LONG)(y * pixelSide + pixelSide) };
+
+				FillRect(deviceContext, &retangle, grayBrushes[color].getHandle());
+			}
 		}
 	}
 }

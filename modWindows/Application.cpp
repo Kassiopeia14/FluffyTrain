@@ -23,7 +23,7 @@ ATOM Application::registerMainWindowClass(WNDPROC mainWindowProcedure)
         IDI_APPLICATION);
     wc.hCursor = LoadCursor((HINSTANCE)NULL,
         IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+    wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
     wc.lpszMenuName = L"MainMenu";
     wc.lpszClassName = L"MainWndClass";
 
@@ -48,12 +48,18 @@ WPARAM Application::run(std::function<void()> task)
         else
         {
             std::chrono::time_point<std::chrono::system_clock> checkPoint = std::chrono::system_clock::now();
-
-            if ((checkPoint - begin).count() > 10000000.0)
+            
+            std::chrono::duration<double> duration = checkPoint - begin;
+            
+            if (duration.count() > 0.2)
             {
                 begin = checkPoint;
 
                 task();
+            }
+            else
+            {
+                std::this_thread::sleep_for(std::chrono::microseconds(10));
             }
         }
     }

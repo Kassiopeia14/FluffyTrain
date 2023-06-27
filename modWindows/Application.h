@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <functional>
 #include <chrono>
+#include <thread>
 
 class Application
 {
