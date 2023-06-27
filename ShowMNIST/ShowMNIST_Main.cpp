@@ -27,7 +27,7 @@ int APIENTRY WinMain(
 
     Window<MessageHandler> mainWindow(
         hInstance, 
-        (LONG)(MNISTLoader::imageSide * Painter::pixelSide),
+        (LONG)(MNISTLoader::imageSide * Painter::pixelSide) + 300,
         (LONG)(MNISTLoader::imageSide * Painter::pixelSide),
         &messageHandler);
 

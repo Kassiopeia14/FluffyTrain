@@ -17,22 +17,28 @@ public:
 
 private:
 
+	const size_t imageSide;
+
 	std::array<COLORREF, colorCount> grayColors;
 
 	std::vector<Brush> grayBrushes;
+
+	size_t yTextOffset;
 
 	static std::array<COLORREF, colorCount> makeGrayColors();
 
 public:
 	
-	Painter();
+	Painter(const size_t _imageSide);
+
 	~Painter();
 
 	void paintImage(
 		HDC deviceContext,
-		const size_t imageSide,
 		std::vector<unsigned char> imageVector);
 	
+	void beginText();
+
 	void paintText(
 		HDC deviceContext,
 		const std::string text);

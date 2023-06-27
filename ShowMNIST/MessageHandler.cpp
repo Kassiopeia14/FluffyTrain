@@ -3,6 +3,7 @@
 MessageHandler::MessageHandler(
 	MNISTClassifier<RandomEngine>& _mnistClassifier,
 	std::atomic<bool>& _running):
+	painter(MNISTLoader::imageSide),
 	mnistClassifier(_mnistClassifier),
 	running(_running)
 {
@@ -14,11 +15,19 @@ MessageHandler::~MessageHandler()
 
 void MessageHandler::onPaint(HDC deviceContext)
 {
-	ClassifiedImage currentImage(mnistClassifier.getCurrentImage());
+	ClassifierState currentState(mnistClassifier.getCurrentState());
 
-	painter.paintImage(deviceContext, MNISTLoader::imageSide, currentImage.image);
+	painter.paintImage(deviceContext, currentState.image);
 
-	painter.paintText(deviceContext, std::to_string(currentImage.label));
+	painter.beginText();
+	
+	std::string labelText("label: " + std::to_string(currentState.label));
+	painter.paintText(deviceContext, labelText);
+
+	std::string numberText("#: " + std::to_string(currentState.number));
+	painter.paintText(deviceContext, numberText);
+
+
 }
 
 void MessageHandler::onClose()

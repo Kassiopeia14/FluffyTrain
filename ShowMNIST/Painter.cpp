@@ -12,7 +12,8 @@ std::array<COLORREF, Painter::colorCount> Painter::makeGrayColors()
 	return result;
 }
 
-Painter::Painter():
+Painter::Painter(const size_t _imageSide):
+	imageSide(_imageSide),
 	grayColors(makeGrayColors()),
 	grayBrushes(grayColors.begin(), grayColors.end())
 {
@@ -24,7 +25,6 @@ Painter::~Painter()
 
 void Painter::paintImage(
 	HDC deviceContext,
-	const size_t imageSide,
 	std::vector<unsigned char> imageVector)
 {
 	for (int x = 0; x < imageSide; x++)
@@ -49,6 +49,11 @@ void Painter::paintImage(
 	}
 }
 
+void Painter::beginText()
+{
+	yTextOffset = 8;
+}
+
 void Painter::paintText(
 	HDC deviceContext,
 	const std::string text)
@@ -57,5 +62,7 @@ void Painter::paintText(
 
 	SetTextColor(deviceContext, RGB(255, 0, 0));
 
-	TextOutA(deviceContext, 8, 8, &text[0], text.length());
+	TextOutA(deviceContext, imageSide * pixelSide, yTextOffset, &text[0], text.length());
+
+	yTextOffset += 16;
 }

@@ -6,11 +6,13 @@
 
 #include"../modMNIST/MNISTLoader.h"
 
-struct ClassifiedImage
+struct ClassifierState
 {
 	std::vector<unsigned char> image;
 
-	size_t label;
+	size_t 
+		label,
+		number;
 };
 
 template<class Engine>
@@ -27,7 +29,9 @@ private:
 
 	std::vector<unsigned char> currentImage;
 
-	size_t currentResult;
+	size_t
+		currentResult,
+		currentImageNumber;
 
 	std::thread workThread;
 
@@ -45,7 +49,7 @@ public:
 
 	void operator()();
 
-	ClassifiedImage getCurrentImage();
+	ClassifierState getCurrentState();
 };
 
 template<class Engine>
@@ -79,11 +83,11 @@ template<class Engine>
 void MNISTClassifier<Engine>::train()
 {
 	const size_t trainImageCount(mnistLoader.getTrainImagesCount());
-	size_t imageNumber = 0;
+	currentImageNumber = 0;
 
-	while (running.load() && (imageNumber < trainImageCount))
+	while (running.load() && (currentImageNumber < trainImageCount))
 	{
-		std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
+		std::vector<unsigned char> image = mnistLoader.getTrainImage(currentImageNumber);
 
 		size_t result = engine.classify(image);
 
@@ -96,7 +100,7 @@ void MNISTClassifier<Engine>::train()
 			lock.clear();
 		}
 
-		imageNumber++;
+		currentImageNumber++;
 	}
 }
 
@@ -104,11 +108,11 @@ template<class Engine>
 void MNISTClassifier<Engine>::test()
 {
 	const size_t testImageCount(mnistLoader.getTestImagesCount());
-	size_t imageNumber = 0;
+	currentImageNumber = 0;
 
-	while (running.load() && (imageNumber < testImageCount))
+	while (running.load() && (currentImageNumber < testImageCount))
 	{
-		std::vector<unsigned char> image = mnistLoader.getTestImage(imageNumber);
+		std::vector<unsigned char> image = mnistLoader.getTestImage(currentImageNumber);
 
 		size_t result = engine.classify(image);
 
@@ -121,27 +125,28 @@ void MNISTClassifier<Engine>::test()
 			lock.clear();
 		}
 
-		imageNumber++;
+		currentImageNumber++;
 	}
 }
 
 template<class Engine>
-ClassifiedImage MNISTClassifier<Engine>::getCurrentImage()
+ClassifierState MNISTClassifier<Engine>::getCurrentState()
 {
 	while (lock.test_and_set())
 	{
 		std::this_thread::yield();
 	}
 
-	ClassifiedImage classifiedImage
+	ClassifierState classifierState
 	{
 		.image = std::vector<unsigned char>(currentImage.size()),
-		.label = currentResult
+		.label = currentResult,
+		.number = currentImageNumber
 	};
 
-	memcpy(&classifiedImage.image[0], &currentImage[0], currentImage.size());
+	memcpy(&classifierState.image[0], &currentImage[0], currentImage.size());
 
 	lock.clear();
 
-	return classifiedImage;
+	return classifierState;
 }
