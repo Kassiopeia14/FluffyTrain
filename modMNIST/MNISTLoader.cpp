@@ -2,14 +2,25 @@
 
 #include <fstream>
 
-MNISTLoader::MNISTLoader(const std::string fileName):
-    file(fileName, std::ios::binary),
-    fileSize(defineFileSize(file)),
-    fileData(fileSize)
+MNISTLoader::MNISTLoader(const std::string path):
+    trainImagesFileName("train-images.idx3-ubyte"),
+    testImagesFileName("t10k-images.idx3-ubyte"),
+    trainImagesFile(path + trainImagesFileName, std::ios::binary),
+    testImagesFile(path + testImagesFileName, std::ios::binary),
+    trainImagesFileSize(defineFileSize(trainImagesFile)),
+    testImagesFileSize(defineFileSize(testImagesFile)),
+    trainImagesCount(trainImagesFileSize / imageSize),
+    testImagesCount(testImagesFileSize / imageSize),
+    trainImagesData(trainImagesFileSize),
+    testImagesData(testImagesFileSize)
 {
-    file.seekg(0, std::ios::beg);
+    trainImagesFile.seekg(0, std::ios::beg);
+    trainImagesFile.read((char*)&trainImagesData[0], trainImagesFileSize);
+    trainImagesFile.close();
 
-    file.read((char*)&fileData[0], fileSize);
+    testImagesFile.seekg(0, std::ios::beg);
+    testImagesFile.read((char*)&testImagesData[0], testImagesFileSize);
+    testImagesFile.close();
 }
 
 MNISTLoader::~MNISTLoader()
@@ -23,11 +34,30 @@ size_t MNISTLoader::defineFileSize(std::ifstream& _file)
     return _file.tellg();
 }
 
-std::vector<unsigned char> MNISTLoader::getImage(const size_t imageNumber)
+size_t MNISTLoader::getTrainImagesCount() const
+{
+    return trainImagesCount;
+}
+
+size_t MNISTLoader::getTestImagesCount() const
+{
+    return testImagesCount;
+}
+
+std::vector<unsigned char> MNISTLoader::getTrainImage(const size_t imageNumber)
 {
     std::vector<unsigned char> image(imageSize);
 
-    memcpy(&image[0], &fileData[imageNumber * imageSize + offset], imageSize);
+    memcpy(&image[0], &trainImagesData[imageNumber * imageSize + offset], imageSize);
+
+    return image;
+}
+
+std::vector<unsigned char> MNISTLoader::getTestImage(const size_t imageNumber)
+{
+    std::vector<unsigned char> image(imageSize);
+
+    memcpy(&image[0], &testImagesData[imageNumber * imageSize + offset], imageSize);
 
     return image;
 }

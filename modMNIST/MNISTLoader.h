@@ -15,20 +15,37 @@ public:
 
 private:
 
-	std::ifstream file;
+	const std::string
+		trainImagesFileName,
+		testImagesFileName;
 
-	const size_t fileSize;
+	std::ifstream 
+		trainImagesFile,
+		testImagesFile;
 
-	std::vector<unsigned char> fileData;
+	const size_t 
+		trainImagesFileSize,
+		testImagesFileSize,
+		trainImagesCount,
+		testImagesCount;
+
+	std::vector<unsigned char> 
+		trainImagesData,
+		testImagesData;
 
 	static size_t defineFileSize(std::ifstream& file);
 
 public:
 
-	MNISTLoader(const std::string fileName);
+	MNISTLoader(const std::string path);
 	
 	~MNISTLoader();
 
-	std::vector<unsigned char> getImage(const size_t number);
+	size_t getTrainImagesCount() const;
 
+	size_t getTestImagesCount() const;
+
+	std::vector<unsigned char> getTrainImage(const size_t number);
+
+	std::vector<unsigned char> getTestImage(const size_t number);
 };

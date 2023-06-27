@@ -31,6 +31,10 @@ private:
 
 	std::thread workThread;
 
+	void train();
+
+	void test();
+
 public:
 	MNISTClassifier(
 		Engine& _engine,
@@ -59,13 +63,27 @@ MNISTClassifier<Engine>::MNISTClassifier(
 }
 
 template<class Engine>
+MNISTClassifier<Engine>::~MNISTClassifier()
+{
+	workThread.join();
+}
+
+template<class Engine>
 void MNISTClassifier<Engine>::operator()()
 {
+	train();
+	test();
+}
+
+template<class Engine>
+void MNISTClassifier<Engine>::train()
+{
+	const size_t trainImageCount(mnistLoader.getTrainImagesCount());
 	size_t imageNumber = 0;
 
-	while (running.load() && (imageNumber < 10000))
+	while (running.load() && (imageNumber < trainImageCount))
 	{
-		std::vector<unsigned char> image = mnistLoader.getImage(imageNumber);
+		std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
 
 		size_t result = engine.classify(image);
 
@@ -83,9 +101,28 @@ void MNISTClassifier<Engine>::operator()()
 }
 
 template<class Engine>
-MNISTClassifier<Engine>::~MNISTClassifier()
+void MNISTClassifier<Engine>::test()
 {
-	workThread.join();
+	const size_t testImageCount(mnistLoader.getTestImagesCount());
+	size_t imageNumber = 0;
+
+	while (running.load() && (imageNumber < testImageCount))
+	{
+		std::vector<unsigned char> image = mnistLoader.getTestImage(imageNumber);
+
+		size_t result = engine.classify(image);
+
+		if (!lock.test_and_set())
+		{
+			memcpy(&currentImage[0], &image[0], image.size());
+
+			currentResult = result;
+
+			lock.clear();
+		}
+
+		imageNumber++;
+	}
 }
 
 template<class Engine>

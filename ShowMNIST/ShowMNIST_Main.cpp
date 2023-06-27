@@ -14,8 +14,8 @@ int APIENTRY WinMain(
 
     application.registerMainWindowClass(Window<MessageHandler>::getWindowProcedure());
 
-    std::string fileName("C:\\Github\\FluffyTrain\\mnist\\t10k-images.idx3-ubyte");
-    MNISTLoader mnistLoader(fileName);
+    std::string path("C:\\Github\\FluffyTrain\\mnist\\");
+    MNISTLoader mnistLoader(path);
 
     RandomEngine randomEngine;
 
