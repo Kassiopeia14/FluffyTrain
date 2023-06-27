@@ -6,8 +6,16 @@
 
 #include"../modMNIST/MNISTLoader.h"
 
+enum ClassifierStage
+{
+	train,
+	test
+};
+
 struct ClassifierState
 {
+	ClassifierStage stage;
+
 	std::vector<unsigned char> image;
 
 	size_t 
@@ -16,6 +24,8 @@ struct ClassifierState
 		number;
 
 	bool classified;
+
+	double successRate;
 };
 
 template<class Engine>
@@ -30,13 +40,16 @@ private:
 	std::atomic_flag lock;
 	std::atomic<bool>& running;
 
+	ClassifierStage currentStage;
+
 	std::vector<unsigned char> currentImage;
 
 	size_t
 		currentResult,
 		currentImageNumber,
-		currentRealLabel,
-		currentHitCount;
+		currentRealLabel;
+
+	double currentSuccessRate;
 
 	bool classified;
 
@@ -90,14 +103,34 @@ template<class Engine>
 void MNISTClassifier<Engine>::train()
 {
 	const size_t trainImageCount(mnistLoader.getTrainImagesCount());
-	currentImageNumber = 0;
+
+	size_t
+		hitCount = 0,
+		imageNumber = 0;
+
+	while (lock.test_and_set())
+	{
+		std::this_thread::yield();
+	}
+
+	currentStage = ClassifierStage::train;
+
 	classified = false;
 
-	while (running.load() && (currentImageNumber < trainImageCount))
-	{
-		std::vector<unsigned char> image = mnistLoader.getTrainImage(currentImageNumber);
+	lock.clear();
 
-		size_t result = engine.classify(image);
+	while (running.load() && (imageNumber < trainImageCount))
+	{
+		std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
+
+		const size_t 
+			realLabel = mnistLoader.getTrainLabel(imageNumber),
+			result = engine.classify(image);
+
+		if (realLabel == result)
+		{
+			hitCount++;
+		}
 
 		if (!lock.test_and_set())
 		{
@@ -105,14 +138,18 @@ void MNISTClassifier<Engine>::train()
 
 			currentResult = result;
 
-			currentRealLabel = mnistLoader.getTrainLabel(currentImageNumber);
+			currentRealLabel = realLabel;
+
+			currentImageNumber = imageNumber;
+
+			currentSuccessRate = (double)hitCount / (imageNumber + 1);
 
 			classified = true;
 
 			lock.clear();
 		}
 
-		currentImageNumber++;
+		imageNumber++;
 	}
 }
 
@@ -120,29 +157,52 @@ template<class Engine>
 void MNISTClassifier<Engine>::test()
 {
 	const size_t testImageCount(mnistLoader.getTestImagesCount());
-	currentImageNumber = 0;
+
+	size_t 
+		hitCount = 0,
+		imageNumber = 0;
+
+	while (lock.test_and_set())
+	{
+		std::this_thread::yield();
+	}
+
+	currentStage = ClassifierStage::test;
+
 	classified = false;
 
-	while (running.load() && (currentImageNumber < testImageCount))
+	lock.clear();
+
+	while (running.load() && (imageNumber < testImageCount))
 	{
-		std::vector<unsigned char> image = mnistLoader.getTestImage(currentImageNumber);
+		std::vector<unsigned char> image = mnistLoader.getTestImage(imageNumber);
 
-		size_t result = engine.classify(image);
+		const size_t
+			realLabel = mnistLoader.getTestLabel(imageNumber),
+			result = engine.classify(image);
 
+		if (realLabel == result)
+		{
+			hitCount++;
+		}
 		if (!lock.test_and_set())
 		{
 			memcpy(&currentImage[0], &image[0], image.size());
 
 			currentResult = result;
 
-			currentRealLabel = mnistLoader.getTestLabel(currentImageNumber);
+			currentRealLabel = realLabel;
+
+			currentImageNumber = imageNumber;
+
+			currentSuccessRate = (double)hitCount / (imageNumber + 1);
 
 			classified = true;
 
 			lock.clear();
 		}
 
-		currentImageNumber++;
+		imageNumber++;
 	}
 }
 
@@ -156,11 +216,13 @@ ClassifierState MNISTClassifier<Engine>::getCurrentState()
 
 	ClassifierState classifierState
 	{
+		.stage = currentStage,
 		.image = std::vector<unsigned char>(currentImage.size()),
 		.realLabel = currentRealLabel,
 		.predictedLabel = currentResult,
 		.number = currentImageNumber,
-		.classified = classified
+		.classified = classified,
+		.successRate = currentSuccessRate
 	};
 
 	memcpy(&classifierState.image[0], &currentImage[0], currentImage.size());

@@ -23,6 +23,9 @@ void MessageHandler::onPaint(HDC deviceContext)
 
 		painter.beginText();
 
+		std::string stageText("stage: " + (currentState.stage == ClassifierStage::train ? std::string("TRAIN") : std::string("TEST")));
+		painter.paintText(deviceContext, stageText);
+
 		std::string predictedLabelText("predicted label: " + std::to_string(currentState.predictedLabel));
 		painter.paintText(deviceContext, predictedLabelText);
 
@@ -31,6 +34,9 @@ void MessageHandler::onPaint(HDC deviceContext)
 
 		std::string numberText("#: " + std::to_string(currentState.number));
 		painter.paintText(deviceContext, numberText);
+
+		std::string successRateText("success rate: " + std::to_string(currentState.successRate));
+		painter.paintText(deviceContext, successRateText);
 	}
 }
 
