@@ -149,6 +149,8 @@ void MNISTClassifier<Engine>::test()
 {
 	const size_t testImageCount(mnistLoader.getTestImagesCount());
 
+	//const size_t testImageCount(mnistLoader.getTrainImagesCount());
+
 	size_t 
 		hitCount = 0,
 		imageNumber = 0;
@@ -167,9 +169,12 @@ void MNISTClassifier<Engine>::test()
 	while (running.load() && (imageNumber < testImageCount))
 	{
 		std::vector<unsigned char> image = mnistLoader.getTestImage(imageNumber);
+		
+		//std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
 
 		const size_t
 			realLabel = mnistLoader.getTestLabel(imageNumber),
+			//realLabel = mnistLoader.getTrainLabel(imageNumber),
 			result = engine.classify(image);
 
 		if (realLabel == result)

@@ -13,7 +13,8 @@ public:
 		imageSize = imageSide * imageSide,
 		imagesOffset = 16,
 		labelsOffset = 8,
-		colorScale = 256;
+		colorScale = 256,
+		classCount = 10;
 
 private:
 

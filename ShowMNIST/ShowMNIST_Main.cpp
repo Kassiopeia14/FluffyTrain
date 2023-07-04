@@ -3,6 +3,7 @@
 #include "MessageHandler.h"
 #include "../modMNIST/MNISTLoader.h"
 #include "../modMNISTClassifier/MNISTClassifier.h"
+#include "../modMNISTClassifier/NaiveBayesEngine.h"
 
 int APIENTRY WinMain(
     HINSTANCE hInstance, 
@@ -17,11 +18,13 @@ int APIENTRY WinMain(
     std::string path("C:\\Github\\FluffyTrain\\mnist\\");
     MNISTLoader mnistLoader(path);
 
-    RandomEngine randomEngine;
+    //RandomEngine randomEngine;
+
+    NaiveBayesEngine naiveBayesEngine;
 
     std::atomic<bool> running(true);
 
-    MNISTClassifier<RandomEngine> mnistClassifier(randomEngine, mnistLoader, running);
+    MNISTClassifier<NaiveBayesEngine> mnistClassifier(naiveBayesEngine, mnistLoader, running);
 
     MessageHandler messageHandler(mnistClassifier, running);
 

@@ -1,7 +1,7 @@
 #include "MessageHandler.h"
 
 MessageHandler::MessageHandler(
-	MNISTClassifier<RandomEngine>& _mnistClassifier,
+	MNISTClassifier<NaiveBayesEngine>& _mnistClassifier,
 	std::atomic<bool>& _running):
 	painter(MNISTLoader::imageSide),
 	mnistClassifier(_mnistClassifier),
