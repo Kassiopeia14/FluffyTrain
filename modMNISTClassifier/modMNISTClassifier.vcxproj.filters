@@ -21,9 +21,15 @@
     <ClInclude Include="RandomEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NaiveBayesEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RandomEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NaiveBayesEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

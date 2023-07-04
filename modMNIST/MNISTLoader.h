@@ -12,7 +12,8 @@ public:
 		imageSide = 28,
 		imageSize = imageSide * imageSide,
 		imagesOffset = 16,
-		labelsOffset = 8;
+		labelsOffset = 8,
+		colorScale = 256;
 
 private:
 

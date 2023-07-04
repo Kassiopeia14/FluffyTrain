@@ -128,9 +128,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="MNISTClassifier.h" />
+    <ClInclude Include="NaiveBayesEngine.h" />
     <ClInclude Include="RandomEngine.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="NaiveBayesEngine.cpp" />
     <ClCompile Include="RandomEngine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
