@@ -4,6 +4,7 @@
 #include "../modMNIST/MNISTLoader.h"
 #include "../modMNISTClassifier/MNISTClassifier.h"
 #include "../modMNISTClassifier/NaiveBayesEngine.h"
+#include "../modMNISTClassifier/NaiveBayesGaussianDistributionEngine.h"
 
 int APIENTRY WinMain(
     HINSTANCE hInstance, 
@@ -20,11 +21,13 @@ int APIENTRY WinMain(
 
     //RandomEngine randomEngine;
 
-    NaiveBayesEngine naiveBayesEngine;
+    //NaiveBayesEngine naiveBayesEngine;
+
+    NaiveBayesGaussianDistributionEngine naiveBayesGaussianDistributionEngine;
 
     std::atomic<bool> running(true);
 
-    MNISTClassifier<NaiveBayesEngine> mnistClassifier(naiveBayesEngine, mnistLoader, running);
+    MNISTClassifier<NaiveBayesGaussianDistributionEngine> mnistClassifier(naiveBayesGaussianDistributionEngine, mnistLoader, running);
 
     MessageHandler messageHandler(mnistClassifier, running);
 

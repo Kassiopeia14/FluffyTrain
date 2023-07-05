@@ -142,6 +142,9 @@ void MNISTClassifier<Engine>::train()
 
 		imageNumber++;
 	}
+
+	engine.trainFinalize();
+
 }
 
 template<class Engine>
