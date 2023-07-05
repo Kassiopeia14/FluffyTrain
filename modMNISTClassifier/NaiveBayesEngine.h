@@ -4,6 +4,7 @@
 #include <thread>
 #include <chrono>
 #include <array>
+#include <algorithm>
 
 #include "../modMNIST/MNISTLoader.h"
 
@@ -19,6 +20,8 @@ public:
 	size_t classify(std::vector<unsigned char> imageVector);
 
 private:
+
+	const double startScore;
 
 	std::vector<size_t> 
 		pixelColorStatistics,

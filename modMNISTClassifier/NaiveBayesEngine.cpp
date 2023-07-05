@@ -1,6 +1,7 @@
 #include "NaiveBayesEngine.h"
 
 NaiveBayesEngine::NaiveBayesEngine():
+	startScore(0.06),
 	pixelColorStatistics(MNISTLoader::imageSize * MNISTLoader::colorScale * MNISTLoader::classCount, 0),
 	classSizes(MNISTLoader::classCount)
 {
@@ -30,26 +31,27 @@ size_t NaiveBayesEngine::classify(std::vector<unsigned char> imageVector)
 
 	// P(c|d) ~ P(d|c) * P(c) = P(d[0]|c) * .. * P(d[m]|c) * P(c)
 	// P(d[i]|c) = n(d in c && d[i] == imageVector[i]) / n(d in c)
-	// ln(P(c|d)) ~ sum_by_i(ln(n(d in c && d[i] == imageVector[i]))) - 28 * 28 * ln(n(d in c))
+	// ln(P(c|d)) ~ sum_by_i(ln(n(d in c && d[i] == imageVector[i]))) - 28 * 28 * ln(n(d in c)) + ln(n(c))
 
-	std::array<double, MNISTLoader::classCount> p = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+	std::array<double, MNISTLoader::classCount> p;
 
-	const double startScore = 0.06;
+	std::transform(classSizes.begin(), classSizes.end(), p.begin(), 
+		[](const size_t classSize) 
+		{
+			return log(classSize);
+		});
 
 	for (int i = 0; i < MNISTLoader::imageSize; i++)
 	{
-		std::array<double, MNISTLoader::classCount> scores = { startScore, startScore, startScore, startScore, startScore, startScore, startScore, startScore, startScore, startScore };
-
 		for (int k = 0; k < MNISTLoader::classCount; k++)
 		{
+			double score = startScore;
+
 			const size_t statisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + imageVector[i];
 
-			scores[k] += pixelColorStatistics[statisticsIndex];
-		}
+			score += pixelColorStatistics[statisticsIndex];
 
-		for (int k = 0; k < MNISTLoader::classCount; k++)
-		{
-			p[k] += log(scores[k] / classSizes[k]);
+			p[k] += log(score / classSizes[k]);
 		}
 	}
 
