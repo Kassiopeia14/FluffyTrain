@@ -17,12 +17,20 @@ void NaiveBayesEngine::train(std::vector<unsigned char> imageVector, const size_
 
 	for (int i = 0; i < MNISTLoader::imageSize; i++)
 	{
-		const size_t statisticsIndex = imageLabel * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + imageVector[i];
+		//if (imageVector[i] > 0)
+		//{
+			const size_t statisticsIndex = imageLabel * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + imageVector[i];
 
-		pixelColorStatistics[statisticsIndex]++;
+			pixelColorStatistics[statisticsIndex]++;
+		//}
 	}
 
 	classSizes[imageLabel]++;
+}
+
+void NaiveBayesEngine::trainFinalize()
+{
+
 }
 
 size_t NaiveBayesEngine::classify(std::vector<unsigned char> imageVector)
@@ -45,13 +53,16 @@ size_t NaiveBayesEngine::classify(std::vector<unsigned char> imageVector)
 	{
 		for (int k = 0; k < MNISTLoader::classCount; k++)
 		{
-			double score = startScore;
+			//if (imageVector[i] > 0)
+			//{
+				double score = startScore;
 
-			const size_t statisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + imageVector[i];
+				const size_t statisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + imageVector[i];
 
-			score += pixelColorStatistics[statisticsIndex];
+				score += pixelColorStatistics[statisticsIndex];
 
-			p[k] += log(score / classSizes[k]);
+				p[k] += log(score / classSizes[k]);
+			//}
 		}
 	}
 
@@ -69,4 +80,45 @@ size_t NaiveBayesEngine::classify(std::vector<unsigned char> imageVector)
 	}
 
 	return classLabel;
+}
+
+std::vector<double> NaiveBayesEngine::getClassPixelDistribution(
+	size_t classLabel,
+	size_t x,
+	size_t y)
+{
+	std::vector<double> result(256);
+
+	double sum = 0.;
+
+	int n = 0;
+
+	for (int i = 0; i < 256; i++)
+	{
+		const size_t
+			pixelIndex = y * MNISTLoader::imageSide + x,
+			statisticsIndex = classLabel * MNISTLoader::imageSize * MNISTLoader::colorScale + pixelIndex * MNISTLoader::colorScale + i;
+
+		result[i] = pixelColorStatistics[statisticsIndex];
+
+		sum += result[i];
+
+		int p = 32;
+
+		if (i % p == p - 1)
+		{
+			sum /= p;
+
+			for (int j = 0; j < p; j++)
+			{
+				result[n * p + j] = sum;
+			}
+
+			n++;
+		}
+	}
+
+	//result[0] = 0;
+
+	return result;
 }

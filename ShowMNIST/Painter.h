@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <windows.h>
+#include <algorithm>
 
 #include "../modWindows/Brush.h"
 
@@ -43,4 +44,8 @@ public:
 		HDC deviceContext,
 		const std::string text);
 
+	void paintPlot(
+		HDC deviceContext, 
+		std::vector<double> plotValues, 
+		double maxPlotValue);
 };

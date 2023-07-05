@@ -14,16 +14,24 @@ private:
 
 	Painter painter;
 
-	MNISTClassifier<NaiveBayesGaussianDistributionEngine>& mnistClassifier;
+	MNISTClassifier<NaiveBayesEngine>& mnistClassifier;
 
 	std::atomic<bool>& running;
 
+	bool trainCompleted;
+
+	std::vector<double> plotValues;
+
+	double maxPlotValue;
+
 public:
 	MessageHandler(
-		MNISTClassifier<NaiveBayesGaussianDistributionEngine>& _mnistClassifier,
+		MNISTClassifier<NaiveBayesEngine>& _mnistClassifier,
 		std::atomic<bool>& _running);
 
 	~MessageHandler();
+
+	void setPlotValues(std::vector<double> _plotValues);
 
 	void onPaint(HDC deviceContext);
 	

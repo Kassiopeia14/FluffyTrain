@@ -114,3 +114,24 @@ size_t NaiveBayesGaussianDistributionEngine::classify(std::vector<unsigned char>
 
 	return classLabel;
 }
+
+std::vector<double> NaiveBayesGaussianDistributionEngine::getClassPixelDistribution(
+	size_t classLabel,
+	size_t x,
+	size_t y)
+{
+	std::vector<double> result(256);
+
+	for (int i = 0; i < 256; i++)
+	{
+		const size_t 
+			pixelIndex = y * MNISTLoader::imageSide + x,
+			statisticsIndex = classLabel * MNISTLoader::imageSize * MNISTLoader::colorScale + pixelIndex * MNISTLoader::colorScale + i;
+
+		result[i] = pixelColorStatistics[statisticsIndex];
+	}
+
+	result[0] = 0;
+
+	return result;
+}

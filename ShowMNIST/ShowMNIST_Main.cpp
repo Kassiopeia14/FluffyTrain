@@ -21,20 +21,20 @@ int APIENTRY WinMain(
 
     //RandomEngine randomEngine;
 
-    //NaiveBayesEngine naiveBayesEngine;
+    NaiveBayesEngine naiveBayesEngine;
 
-    NaiveBayesGaussianDistributionEngine naiveBayesGaussianDistributionEngine;
+    //NaiveBayesGaussianDistributionEngine naiveBayesGaussianDistributionEngine;
 
     std::atomic<bool> running(true);
 
-    MNISTClassifier<NaiveBayesGaussianDistributionEngine> mnistClassifier(naiveBayesGaussianDistributionEngine, mnistLoader, running);
+    MNISTClassifier<NaiveBayesEngine> mnistClassifier(naiveBayesEngine, mnistLoader, running);
 
     MessageHandler messageHandler(mnistClassifier, running);
 
     Window<MessageHandler> mainWindow(
         hInstance, 
         (LONG)(MNISTLoader::imageSide * Painter::pixelSide) + 300,
-        (LONG)(MNISTLoader::imageSide * Painter::pixelSide),
+        (LONG)(MNISTLoader::imageSide * Painter::pixelSide) + 300,
         &messageHandler);
 
     mainWindow.show(nCmdShow);

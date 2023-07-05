@@ -66,3 +66,13 @@ void Painter::paintText(
 
 	yTextOffset += 16;
 }
+
+void Painter::paintPlot(HDC deviceContext, std::vector<double> plotValues, double maxPlotValue)
+{
+	for (int i = 0; i < plotValues.size(); i++)
+	{
+		double y = plotValues[i] / maxPlotValue * 280;
+
+		SetPixel(deviceContext, 16 + i, imageSide * pixelSide + 280 - y, RGB(255, 255, 255));
+	}
+}

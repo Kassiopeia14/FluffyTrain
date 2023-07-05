@@ -23,6 +23,11 @@ public:
 
 	size_t classify(std::vector<unsigned char> imageVector);
 
+	std::vector<double> getClassPixelDistribution(
+		size_t classLabel,
+		size_t x,
+		size_t y);
+
 private:
 
 	const double startScore;
@@ -34,6 +39,5 @@ private:
 	std::vector<double>
 		mu,
 		sigmaSquare;
-
 };
 

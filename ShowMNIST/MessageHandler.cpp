@@ -1,10 +1,13 @@
 #include "MessageHandler.h"
 
 MessageHandler::MessageHandler(
-	MNISTClassifier<NaiveBayesGaussianDistributionEngine>& _mnistClassifier,
+	MNISTClassifier<NaiveBayesEngine>& _mnistClassifier,
 	std::atomic<bool>& _running):
 	painter(MNISTLoader::imageSide),
 	mnistClassifier(_mnistClassifier),
+	trainCompleted(false),
+	plotValues(256, 0.),
+	maxPlotValue(1.),
 	running(_running)
 {
 }
@@ -34,13 +37,39 @@ void MessageHandler::onPaint(HDC deviceContext)
 
 		if (currentState.stage == ClassifierStage::test)
 		{
+			if (!trainCompleted)
+			{
+				trainCompleted = true;
+
+				setPlotValues(mnistClassifier.getClassPixelDistribution(7, 15, 15));
+			}
+
 			std::string predictedLabelText("predicted label: " + std::to_string(currentState.predictedLabel));
 			painter.paintText(deviceContext, predictedLabelText);
 
 			std::string successRateText("success rate: " + std::to_string(currentState.successRate));
 			painter.paintText(deviceContext, successRateText);
+
+			painter.paintPlot(deviceContext, plotValues, maxPlotValue);
 		}
 	}
+}
+
+void MessageHandler::setPlotValues(std::vector<double> _plotValues)
+{
+	std::transform(
+		_plotValues.begin(),
+		_plotValues.end(),
+		plotValues.begin(),
+		[this](const double plotValue)
+		{
+			if (maxPlotValue < plotValue)
+			{
+				maxPlotValue = plotValue;
+			}
+
+			return plotValue;
+		});
 }
 
 void MessageHandler::onClose()

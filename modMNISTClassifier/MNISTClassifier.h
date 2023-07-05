@@ -70,6 +70,11 @@ public:
 	void operator()();
 
 	ClassifierState getCurrentState();
+
+	std::vector<double> getClassPixelDistribution(
+		size_t classLabel,
+		size_t x, 
+		size_t y);
 };
 
 template<class Engine>
@@ -229,4 +234,13 @@ ClassifierState MNISTClassifier<Engine>::getCurrentState()
 	lock.clear();
 
 	return classifierState;
+}
+
+template<class Engine>
+std::vector<double> MNISTClassifier<Engine>::getClassPixelDistribution(
+	size_t classLabel,
+	size_t x,
+	size_t y)
+{
+	return engine.getClassPixelDistribution(classLabel, x, y);
 }
