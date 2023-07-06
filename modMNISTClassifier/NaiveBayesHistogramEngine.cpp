@@ -28,7 +28,7 @@ void NaiveBayesHistogramEngine::train(std::vector<unsigned char> imageVector, co
 
 void NaiveBayesHistogramEngine::trainFinalize()
 {
-	int windowSize = 4;
+	int windowSize = 32;
 
 	for (int i = 0; i < MNISTLoader::imageSize; i++)
 	{
