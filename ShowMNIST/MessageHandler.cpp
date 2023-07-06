@@ -41,7 +41,7 @@ void MessageHandler::onPaint(HDC deviceContext)
 			{
 				trainCompleted = true;
 
-				setPlotValues(mnistClassifier.getClassPixelDistribution(7, 15, 15));
+				setPlotValues(mnistClassifier.getClassPixelDistribution(6, 15, 17));
 			}
 
 			std::string predictedLabelText("predicted label: " + std::to_string(currentState.predictedLabel));

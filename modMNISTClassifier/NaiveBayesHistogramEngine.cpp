@@ -28,34 +28,30 @@ void NaiveBayesHistogramEngine::train(std::vector<unsigned char> imageVector, co
 
 void NaiveBayesHistogramEngine::trainFinalize()
 {
+	int windowSize = 4;
+
 	for (int i = 0; i < MNISTLoader::imageSize; i++)
 	{
 		for (int k = 0; k < MNISTLoader::classCount; k++)
 		{
-			size_t sum = 0;
-
-			int n = 0;
-
-			for (int j = 0; j < MNISTLoader::colorScale; j++)
+			for (int j = 0; j < MNISTLoader::colorScale / windowSize; j++)
 			{
-				const size_t statisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + j;
+				const int histogramStatisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + j;
 
-				sum += pixelColorStatistics[statisticsIndex];
+				size_t sum = 0;
 
-				int p = 64;
-
-				if (j % p == p - 1)
+				for (int d = 0; d < windowSize; d++)
 				{
-					sum /= p;
+					const int statisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + j * windowSize + d;
+				
+					sum += pixelColorStatistics[statisticsIndex];
+				}
+				
+				for (int d = 0; d < windowSize; d++)
+				{
+					const int statisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + j * windowSize + d;
 
-					for (int d = 0; d < p; d++)
-					{
-						const size_t histogramStatisticsIndex = k * MNISTLoader::imageSize * MNISTLoader::colorScale + i * MNISTLoader::colorScale + n * p + d;
-
-						pixelColorHistogramStatistics[histogramStatisticsIndex] = sum;
-					}
-
-					n++;
+					pixelColorHistogramStatistics[statisticsIndex] = sum / windowSize;
 				}
 			}
 		}
@@ -113,17 +109,13 @@ std::vector<double> NaiveBayesHistogramEngine::getClassPixelDistribution(
 	size_t x,
 	size_t y)
 {
+	const int pixelIndex = y * MNISTLoader::imageSide + x;
+
 	std::vector<double> result(256);
-
-	double sum = 0.;
-
-	int n = 0;
 
 	for (int i = 0; i < 256; i++)
 	{
-		const size_t
-			pixelIndex = y * MNISTLoader::imageSide + x,
-			statisticsIndex = classLabel * MNISTLoader::imageSize * MNISTLoader::colorScale + pixelIndex * MNISTLoader::colorScale + i;
+		const int statisticsIndex = classLabel * MNISTLoader::imageSize * MNISTLoader::colorScale + pixelIndex * MNISTLoader::colorScale + i;
 
 		result[i] = pixelColorHistogramStatistics[statisticsIndex];
 	}
