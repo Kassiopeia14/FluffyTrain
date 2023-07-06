@@ -27,6 +27,9 @@
     <ClInclude Include="NaiveBayesGaussianDistributionEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="NaiveBayesHistogramEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RandomEngine.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NaiveBayesGaussianDistributionEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NaiveBayesHistogramEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

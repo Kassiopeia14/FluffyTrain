@@ -21,13 +21,15 @@ int APIENTRY WinMain(
 
     //RandomEngine randomEngine;
 
-    NaiveBayesEngine naiveBayesEngine;
+    //NaiveBayesEngine naiveBayesEngine;
 
     //NaiveBayesGaussianDistributionEngine naiveBayesGaussianDistributionEngine;
 
+    NaiveBayesHistogramEngine naiveBayesHistogramEngine;
+
     std::atomic<bool> running(true);
 
-    MNISTClassifier<NaiveBayesEngine> mnistClassifier(naiveBayesEngine, mnistLoader, running);
+    MNISTClassifier<NaiveBayesHistogramEngine> mnistClassifier(naiveBayesHistogramEngine, mnistLoader, running);
 
     MessageHandler messageHandler(mnistClassifier, running);
 

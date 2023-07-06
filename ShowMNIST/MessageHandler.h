@@ -6,6 +6,7 @@
 #include "../modMNISTClassifier/RandomEngine.h"
 #include "../modMNISTClassifier/NaiveBayesEngine.h"
 #include "../modMNISTClassifier/NaiveBayesGaussianDistributionEngine.h"
+#include "../modMNISTClassifier/NaiveBayesHistogramEngine.h"
 #include "../modMNIST/MNISTLoader.h"
 
 class MessageHandler
@@ -14,7 +15,7 @@ private:
 
 	Painter painter;
 
-	MNISTClassifier<NaiveBayesEngine>& mnistClassifier;
+	MNISTClassifier<NaiveBayesHistogramEngine>& mnistClassifier;
 
 	std::atomic<bool>& running;
 
@@ -26,7 +27,7 @@ private:
 
 public:
 	MessageHandler(
-		MNISTClassifier<NaiveBayesEngine>& _mnistClassifier,
+		MNISTClassifier<NaiveBayesHistogramEngine>& _mnistClassifier,
 		std::atomic<bool>& _running);
 
 	~MessageHandler();
