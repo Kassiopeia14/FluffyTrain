@@ -1,7 +1,7 @@
 #include "MessageHandler.h"
 
 MessageHandler::MessageHandler(
-	MNISTClassifier<NaiveBayesHistogramEngine>& _mnistClassifier,
+	MNISTClassifier<SoftmaxEngine>& _mnistClassifier,
 	std::atomic<bool>& _running):
 	painter(MNISTLoader::imageSide),
 	mnistClassifier(_mnistClassifier),
@@ -37,12 +37,12 @@ void MessageHandler::onPaint(HDC deviceContext)
 
 		if (currentState.stage == ClassifierStage::test)
 		{
-			if (!trainCompleted)
-			{
-				trainCompleted = true;
+			//if (!trainCompleted)
+			//{
+			//	trainCompleted = true;
 
-				setPlotValues(mnistClassifier.getClassPixelDistribution(2, 11, 20));
-			}
+			//	setPlotValues(mnistClassifier.getClassPixelDistribution(2, 11, 20));
+			//}
 
 			std::string predictedLabelText("predicted label: " + std::to_string(currentState.predictedLabel));
 			painter.paintText(deviceContext, predictedLabelText);
@@ -50,7 +50,7 @@ void MessageHandler::onPaint(HDC deviceContext)
 			std::string successRateText("success rate: " + std::to_string(currentState.successRate));
 			painter.paintText(deviceContext, successRateText);
 
-			painter.paintPlot(deviceContext, plotValues, maxPlotValue);
+			//painter.paintPlot(deviceContext, plotValues, maxPlotValue);
 		}
 	}
 }

@@ -5,6 +5,7 @@
 #include "../modMNISTClassifier/MNISTClassifier.h"
 #include "../modMNISTClassifier/NaiveBayesEngine.h"
 #include "../modMNISTClassifier/NaiveBayesGaussianDistributionEngine.h"
+#include "../modMNISTClassifier/SoftmaxEngine.h"
 
 int APIENTRY WinMain(
     HINSTANCE hInstance, 
@@ -25,11 +26,13 @@ int APIENTRY WinMain(
 
     //NaiveBayesGaussianDistributionEngine naiveBayesGaussianDistributionEngine;
 
-    NaiveBayesHistogramEngine naiveBayesHistogramEngine;
+    SoftmaxEngine softmaxEngine;
+
+    //NaiveBayesHistogramEngine naiveBayesHistogramEngine;
 
     std::atomic<bool> running(true);
 
-    MNISTClassifier<NaiveBayesHistogramEngine> mnistClassifier(naiveBayesHistogramEngine, mnistLoader, running);
+    MNISTClassifier<SoftmaxEngine> mnistClassifier(softmaxEngine, mnistLoader, running);
 
     MessageHandler messageHandler(mnistClassifier, running);
 
