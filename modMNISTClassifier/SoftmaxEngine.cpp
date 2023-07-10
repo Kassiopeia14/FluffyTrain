@@ -123,11 +123,11 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 	{
 		for (int k = 0; k < MNISTLoader::classCount; k++)
 		{
-			biases[k] -= theta * db[k];
+			biases[k] -= theta * temperature * db[k];
 
 			for (int i = 0; i < MNISTLoader::imageSize; i++)
 			{
-				weights[MNISTLoader::imageSize * k + i] -= theta * db[k] * imageVector[i];
+				weights[MNISTLoader::imageSize * k + i] -= theta * temperature * db[k] * imageVector[i];
 			}
 		}
 	}
