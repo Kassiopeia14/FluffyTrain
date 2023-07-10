@@ -111,9 +111,6 @@ void MNISTClassifier<Engine>::train()
 {
 	const size_t trainImageCount(mnistLoader.getTrainImagesCount());
 
-	size_t
-		imageNumber = 0;
-
 	while (lock.test_and_set())
 	{
 		std::this_thread::yield();
@@ -129,6 +126,9 @@ void MNISTClassifier<Engine>::train()
 
 	while (running.load() && !engine.stopCondition(epoch))
 	{
+		size_t
+			imageNumber = 0;
+
 		while (running.load() && (imageNumber < trainImageCount))
 		{
 			std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);

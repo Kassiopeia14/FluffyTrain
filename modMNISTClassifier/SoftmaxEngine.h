@@ -28,17 +28,15 @@ private:
 
 	static const char* name;
 
+	double theta;
+
 	std::vector<double>
 		weights,
 		biases;
 
-	const double startScore;
-
-	std::vector<size_t>
-		pixelColorStatistics,
-		classSizes;
-
 	static std::vector<double> initializeWeights();
 
 	static std::vector<double> initializeBiases();
+
+	static std::vector<double> softmax(std::array<double, MNISTLoader::classCount> z);
 };
