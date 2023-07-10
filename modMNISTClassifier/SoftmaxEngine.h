@@ -20,6 +20,8 @@ public:
 
 	void train(std::vector<unsigned char> imageVector, const size_t imageLabel);
 
+	void trainEpochFinalize();
+
 	void trainFinalize();
 
 	size_t classify(std::vector<unsigned char> imageVector);
@@ -28,7 +30,9 @@ private:
 
 	static const char* name;
 
-	double theta;
+	double 
+		theta,
+		temperature;
 
 	std::vector<double>
 		weights,
@@ -37,6 +41,6 @@ private:
 	static std::vector<double> initializeWeights();
 
 	static std::vector<double> initializeBiases();
-
-	static std::vector<double> softmax(std::array<double, MNISTLoader::classCount> z);
+	
+	static std::vector<double> softmax(const double temperature, std::array<double, MNISTLoader::classCount> z);
 };

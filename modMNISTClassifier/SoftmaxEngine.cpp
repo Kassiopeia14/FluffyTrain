@@ -3,7 +3,8 @@
 const char* SoftmaxEngine::name("Softmax");
 
 SoftmaxEngine::SoftmaxEngine():
-	theta(0.001),
+	theta(.1),
+	temperature(.1),
 	weights(initializeWeights()),
 	biases(initializeBiases())
 {
@@ -20,7 +21,7 @@ const char* SoftmaxEngine::getName()
 
 bool SoftmaxEngine::stopCondition(const size_t epoch)
 {
-	return epoch > 4;
+	return epoch > 16;
 }
 
 std::vector<double> SoftmaxEngine::initializeWeights()
@@ -29,7 +30,7 @@ std::vector<double> SoftmaxEngine::initializeWeights()
 
 	for (auto weightValue = weightsValues.begin(); weightValue != weightsValues.end(); weightValue++)
 	{
-		*weightValue = (1. - ((double)(rand() % 2000)) / 1000) / 100;
+		*weightValue = (1. - ((double)(rand() % 2000)) / 1000) / 1000000;
 	}
 
 	return weightsValues;
@@ -41,33 +42,29 @@ std::vector<double> SoftmaxEngine::initializeBiases()
 
 	for (auto biaseValue = biasesValues.begin(); biaseValue != biasesValues.end(); biaseValue++)
 	{
-		*biaseValue = (1. - ((double)(rand() % 2000)) / 1000) / 100;
+		*biaseValue = (1. - ((double)(rand() % 2000)) / 1000) / 1000000;
 	}
 
 	return biasesValues;
 }
 
-std::vector<double> SoftmaxEngine::softmax(std::array<double, MNISTLoader::classCount> z)
+std::vector<double> SoftmaxEngine::softmax(const double temperature, std::array<double, MNISTLoader::classCount> z)
 {
 	std::vector<double> result(MNISTLoader::classCount, 0.);
 
 	double zMax = 0.;
-	size_t maxIndex = z.size();
 
-	for (int i = 0; i < z.size(); i++)
+	for (auto zItem = z.begin(); zItem != z.end(); zItem++)
 	{
-		if (z[i] > zMax)
+		if (*zItem > zMax)
 		{
-			zMax = z[i];
-			maxIndex = i;
+			zMax = *zItem;
 		}
 	}
 
-	if (zMax > 1000.)
+	for (auto zItem = z.begin(); zItem != z.end(); zItem++)
 	{
-		result[maxIndex] = 1.;
-
-		return result;
+		*zItem -= zMax;
 	}
 
 	double sum = 0.;
@@ -79,7 +76,7 @@ std::vector<double> SoftmaxEngine::softmax(std::array<double, MNISTLoader::class
 
 	for (; zItem != z.end(); zItem++, resultItem++)
 	{
-		const double e = exp(*zItem);
+		const double e = exp(*zItem * temperature);
 
 		*resultItem = e;
 
@@ -112,19 +109,34 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 		z[k] = sum;
 	}
 
-	std::vector<double> db(softmax(z));
+	std::vector<double> db(softmax(temperature, z));
 
 	db[imageLabel] -= 1.;
 
-	for (int k = 0; k < MNISTLoader::classCount; k++)
+	double sum2 = 0.;
+	for (auto dbItem = db.begin(); dbItem != db.end(); dbItem++)
 	{
-		biases[k] -= theta * db[k];
+		sum2 += *dbItem * *dbItem;
+	}
 
-		for (int i = 0; i < MNISTLoader::imageSize; i++)
+	if (sum2 > 0.)
+	{
+		for (int k = 0; k < MNISTLoader::classCount; k++)
 		{
-			weights[MNISTLoader::imageSize * k + i] -= theta * db[k] * imageVector[i];
+			biases[k] -= theta * db[k];
+
+			for (int i = 0; i < MNISTLoader::imageSize; i++)
+			{
+				weights[MNISTLoader::imageSize * k + i] -= theta * db[k] * imageVector[i];
+			}
 		}
 	}
+}
+
+void SoftmaxEngine::trainEpochFinalize()
+{
+	theta /= 4;
+	temperature /= 4;
 }
 
 void SoftmaxEngine::trainFinalize()
@@ -149,7 +161,7 @@ size_t SoftmaxEngine::classify(std::vector<unsigned char> imageVector)
 		z[k] = sum;
 	}
 
-	std::vector<double> p(softmax(z));
+	std::vector<double> p(softmax(temperature, z));
 
 	double maxP = log(0.);
 

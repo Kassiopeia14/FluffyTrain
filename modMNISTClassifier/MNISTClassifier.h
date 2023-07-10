@@ -154,6 +154,8 @@ void MNISTClassifier<Engine>::train()
 			imageNumber++;
 		}
 
+		engine.trainEpochFinalize();
+
 		epoch++;
 	}
 
