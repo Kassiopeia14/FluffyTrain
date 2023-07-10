@@ -69,6 +69,8 @@ public:
 
 	void operator()();
 
+	std::string getEngineName() const;
+
 	ClassifierState getCurrentState();
 
 	std::vector<double> getClassPixelDistribution(
@@ -123,33 +125,39 @@ void MNISTClassifier<Engine>::train()
 
 	lock.clear();
 
-	while (running.load() && (imageNumber < trainImageCount))
+	size_t epoch = 0;
+
+	while (running.load() && !engine.stopCondition(epoch))
 	{
-		std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
-
-		const size_t 
-			realLabel = mnistLoader.getTrainLabel(imageNumber);
-
-		engine.train(image, realLabel);
-
-		if (!lock.test_and_set())
+		while (running.load() && (imageNumber < trainImageCount))
 		{
-			memcpy(&currentImage[0], &image[0], image.size());
+			std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
 
-			currentRealLabel = realLabel;
+			const size_t
+				realLabel = mnistLoader.getTrainLabel(imageNumber);
 
-			currentImageNumber = imageNumber;
+			engine.train(image, realLabel);
 
-			classified = true;
+			if (!lock.test_and_set())
+			{
+				memcpy(&currentImage[0], &image[0], image.size());
 
-			lock.clear();
+				currentRealLabel = realLabel;
+
+				currentImageNumber = imageNumber;
+
+				classified = true;
+
+				lock.clear();
+			}
+
+			imageNumber++;
 		}
 
-		imageNumber++;
+		epoch++;
 	}
 
 	engine.trainFinalize();
-
 }
 
 template<class Engine>
@@ -208,6 +216,12 @@ void MNISTClassifier<Engine>::test()
 
 		imageNumber++;
 	}
+}
+
+template<class Engine>
+std::string MNISTClassifier<Engine>::getEngineName() const
+{
+	return engine.getName();
 }
 
 template<class Engine>

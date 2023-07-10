@@ -1,5 +1,7 @@
 #include "NaiveBayesEngine.h"
 
+const char* NaiveBayesEngine::name("Naive Bayes");
+
 NaiveBayesEngine::NaiveBayesEngine():
 	startScore(0.06),
 	pixelColorStatistics(MNISTLoader::imageSize * MNISTLoader::colorScale * MNISTLoader::classCount, 0),
@@ -9,6 +11,16 @@ NaiveBayesEngine::NaiveBayesEngine():
 
 NaiveBayesEngine::~NaiveBayesEngine()
 {
+}
+
+const char* NaiveBayesEngine::getName()
+{
+	return name;
+}
+
+bool NaiveBayesEngine::stopCondition(const size_t epoch)
+{
+	return epoch > 0;
 }
 
 void NaiveBayesEngine::train(std::vector<unsigned char> imageVector, const size_t imageLabel)

@@ -1,5 +1,7 @@
 #include "NaiveBayesHistogramEngine.h"
 
+const char* NaiveBayesHistogramEngine::name("Naive Bayes Histogram");
+
 NaiveBayesHistogramEngine::NaiveBayesHistogramEngine():
 	startScore(0.06),
 	pixelColorStatistics(MNISTLoader::imageSize * MNISTLoader::colorScale * MNISTLoader::classCount, 0),
@@ -10,6 +12,16 @@ NaiveBayesHistogramEngine::NaiveBayesHistogramEngine():
 
 NaiveBayesHistogramEngine::~NaiveBayesHistogramEngine()
 {
+}
+
+const char* NaiveBayesHistogramEngine::getName()
+{
+	return name;
+}
+
+bool NaiveBayesHistogramEngine::stopCondition(const size_t epoch)
+{
+	return epoch > 0;
 }
 
 void NaiveBayesHistogramEngine::train(std::vector<unsigned char> imageVector, const size_t imageLabel)

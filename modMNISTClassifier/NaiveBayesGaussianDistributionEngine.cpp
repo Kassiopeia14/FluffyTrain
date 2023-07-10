@@ -1,5 +1,7 @@
 #include "NaiveBayesGaussianDistributionEngine.h"
 
+const char* NaiveBayesGaussianDistributionEngine::name("Naive Bayes Gaussian Distribution");
+
 NaiveBayesGaussianDistributionEngine::NaiveBayesGaussianDistributionEngine() :
 	startScore(0.06),
 	pixelColorStatistics(MNISTLoader::imageSize * MNISTLoader::colorScale * MNISTLoader::classCount, 0),
@@ -11,6 +13,16 @@ NaiveBayesGaussianDistributionEngine::NaiveBayesGaussianDistributionEngine() :
 
 NaiveBayesGaussianDistributionEngine::~NaiveBayesGaussianDistributionEngine()
 {
+}
+
+const char* NaiveBayesGaussianDistributionEngine::getName()
+{
+	return name;
+}
+
+bool NaiveBayesGaussianDistributionEngine::stopCondition(const size_t epoch)
+{
+	return epoch > 0;
 }
 
 void NaiveBayesGaussianDistributionEngine::train(std::vector<unsigned char> imageVector, const size_t imageLabel)

@@ -26,6 +26,9 @@ void MessageHandler::onPaint(HDC deviceContext)
 
 		painter.beginText();
 
+		std::string engineName("Engine: " + mnistClassifier.getEngineName());
+		painter.paintText(deviceContext, engineName);
+
 		std::string stageText("stage: " + (currentState.stage == ClassifierStage::train ? std::string("TRAIN") : std::string("TEST")));
 		painter.paintText(deviceContext, stageText);
 

@@ -17,6 +17,10 @@ public:
 	NaiveBayesGaussianDistributionEngine();
 	~NaiveBayesGaussianDistributionEngine();
 
+	const char* getName();
+
+	bool stopCondition(const size_t epoch);
+
 	void train(std::vector<unsigned char> imageVector, const size_t imageLabel);
 
 	void trainFinalize();
@@ -29,6 +33,8 @@ public:
 		size_t y);
 
 private:
+
+	static const char* name;
 
 	const double startScore;
 

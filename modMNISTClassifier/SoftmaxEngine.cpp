@@ -1,14 +1,52 @@
 #include "SoftmaxEngine.h"
 
+const char* SoftmaxEngine::name("Softmax");
+
 SoftmaxEngine::SoftmaxEngine():
+	weights(initializeWeights()),
+	biases(initializeBiases()),
 	startScore(0.06),
-	pixelColorStatistics(MNISTLoader::imageSize* MNISTLoader::colorScale* MNISTLoader::classCount, 0),
+	pixelColorStatistics(MNISTLoader::imageSize * MNISTLoader::colorScale * MNISTLoader::classCount, 0),
 	classSizes(MNISTLoader::classCount)
 {
 }
 
 SoftmaxEngine::~SoftmaxEngine()
 {
+}
+
+const char* SoftmaxEngine::getName()
+{
+	return name;
+}
+
+bool SoftmaxEngine::stopCondition(const size_t epoch)
+{
+	return epoch > 0;
+}
+
+std::vector<double> SoftmaxEngine::initializeWeights()
+{
+	std::vector<double> weightsValues(MNISTLoader::imageSize * MNISTLoader::classCount);
+
+	for (auto weightValue = weightsValues.begin(); weightValue != weightsValues.end(); weightValue++)
+	{
+		*weightValue = 1. - ((double)(rand() % 2000)) / 1000;
+	}
+
+	return weightsValues;
+}
+
+std::vector<double> SoftmaxEngine::initializeBiases()
+{
+	std::vector<double> biasesValues(MNISTLoader::classCount);
+
+	for (auto biaseValue = biasesValues.begin(); biaseValue != biasesValues.end(); biaseValue++)
+	{
+		*biaseValue = 1. - ((double)(rand() % 2000)) / 1000;
+	}
+
+	return biasesValues;
 }
 
 void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t imageLabel)

@@ -14,6 +14,10 @@ public:
 	SoftmaxEngine();
 	~SoftmaxEngine();
 
+	const char* getName();
+
+	bool stopCondition(const size_t epoch);
+
 	void train(std::vector<unsigned char> imageVector, const size_t imageLabel);
 
 	void trainFinalize();
@@ -22,10 +26,19 @@ public:
 
 private:
 
+	static const char* name;
+
+	std::vector<double>
+		weights,
+		biases;
+
 	const double startScore;
 
 	std::vector<size_t>
 		pixelColorStatistics,
 		classSizes;
 
+	static std::vector<double> initializeWeights();
+
+	static std::vector<double> initializeBiases();
 };
