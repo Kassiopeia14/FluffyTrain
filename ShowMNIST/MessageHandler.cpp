@@ -8,7 +8,9 @@ MessageHandler::MessageHandler(
 	trainCompleted(false),
 	plotValues(256, 0.),
 	maxPlotValue(1.),
-	running(_running)
+	running(_running),
+	yellow(RGB(255, 255, 0)),
+	red(RGB(255, 0, 0))
 {
 }
 
@@ -27,16 +29,22 @@ void MessageHandler::onPaint(HDC deviceContext)
 		painter.beginText();
 
 		std::string engineName("Engine: " + mnistClassifier.getEngineName());
-		painter.paintText(deviceContext, engineName);
+		painter.paintText(deviceContext, engineName, red);
 
 		std::string stageText("stage: " + (currentState.stage == ClassifierStage::train ? std::string("TRAIN") : std::string("TEST")));
-		painter.paintText(deviceContext, stageText);
+		painter.paintText(deviceContext, stageText, red);
+
+		if (currentState.tested)
+		{
+			std::string successRateText("success rate: " + std::to_string(currentState.successRate));
+			painter.paintText(deviceContext, successRateText, yellow);
+		}
 
 		std::string numberText("#: " + std::to_string(currentState.number));
-		painter.paintText(deviceContext, numberText);
+		painter.paintText(deviceContext, numberText, red);
 
 		std::string realLabelText("real label: " + std::to_string(currentState.realLabel));
-		painter.paintText(deviceContext, realLabelText);
+		painter.paintText(deviceContext, realLabelText, red);
 
 		if (currentState.stage == ClassifierStage::test)
 		{
@@ -48,10 +56,7 @@ void MessageHandler::onPaint(HDC deviceContext)
 			//}
 
 			std::string predictedLabelText("predicted label: " + std::to_string(currentState.predictedLabel));
-			painter.paintText(deviceContext, predictedLabelText);
-
-			std::string successRateText("success rate: " + std::to_string(currentState.successRate));
-			painter.paintText(deviceContext, successRateText);
+			painter.paintText(deviceContext, predictedLabelText, red);
 
 			//painter.paintPlot(deviceContext, plotValues, maxPlotValue);
 		}

@@ -23,7 +23,9 @@ struct ClassifierState
 		predictedLabel,
 		number;
 
-	bool classified;
+	bool 
+		classified,
+		tested;
 
 	double successRate;
 };
@@ -51,7 +53,9 @@ private:
 
 	double currentSuccessRate;
 
-	bool classified;
+	bool 
+		classified,
+		tested;
 
 	std::thread workThread;
 
@@ -89,6 +93,7 @@ MNISTClassifier<Engine>::MNISTClassifier(
 	lock(),
 	running(_running),
 	currentImage(MNISTLoader::imageSize),
+	tested(false),
 	workThread(std::ref(*this))
 {
 }
@@ -102,8 +107,20 @@ MNISTClassifier<Engine>::~MNISTClassifier()
 template<class Engine>
 void MNISTClassifier<Engine>::operator()()
 {
-	train();
-	test();
+	size_t epoch = 0;
+
+	while (running.load() && !engine.stopCondition(epoch))
+	{
+		train();
+		engine.trainEpochFinalize();
+
+		test();
+
+		epoch++;
+	}
+
+	engine.trainFinalize();
+
 }
 
 template<class Engine>
@@ -122,44 +139,33 @@ void MNISTClassifier<Engine>::train()
 
 	lock.clear();
 
-	size_t epoch = 0;
+	size_t
+		imageNumber = 0;
 
-	while (running.load() && !engine.stopCondition(epoch))
+	while (running.load() && (imageNumber < trainImageCount))
 	{
-		size_t
-			imageNumber = 0;
+		std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
 
-		while (running.load() && (imageNumber < trainImageCount))
+		const size_t
+			realLabel = mnistLoader.getTrainLabel(imageNumber);
+
+		engine.train(image, realLabel);
+
+		if (!lock.test_and_set())
 		{
-			std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
+			memcpy(&currentImage[0], &image[0], image.size());
 
-			const size_t
-				realLabel = mnistLoader.getTrainLabel(imageNumber);
+			currentRealLabel = realLabel;
 
-			engine.train(image, realLabel);
+			currentImageNumber = imageNumber;
 
-			if (!lock.test_and_set())
-			{
-				memcpy(&currentImage[0], &image[0], image.size());
+			classified = true;
 
-				currentRealLabel = realLabel;
-
-				currentImageNumber = imageNumber;
-
-				classified = true;
-
-				lock.clear();
-			}
-
-			imageNumber++;
+			lock.clear();
 		}
 
-		engine.trainEpochFinalize();
-
-		epoch++;
+		imageNumber++;
 	}
-
-	engine.trainFinalize();
 }
 
 template<class Engine>
@@ -209,8 +215,12 @@ void MNISTClassifier<Engine>::test()
 
 			currentImageNumber = imageNumber;
 
-			currentSuccessRate = (double)hitCount / (imageNumber + 1);
+			if (imageNumber == testImageCount - 1)
+			{
+				currentSuccessRate = (double)hitCount / (imageNumber + 1);
 
+				tested = true;
+			}
 			classified = true;
 
 			lock.clear();
@@ -242,6 +252,7 @@ ClassifierState MNISTClassifier<Engine>::getCurrentState()
 		.predictedLabel = currentResult,
 		.number = currentImageNumber,
 		.classified = classified,
+		.tested = tested,
 		.successRate = currentSuccessRate
 	};
 

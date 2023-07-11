@@ -135,7 +135,7 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 
 void SoftmaxEngine::trainEpochFinalize()
 {
-	theta /= 4;
+	theta /= 2;
 	temperature /= 4;
 }
 

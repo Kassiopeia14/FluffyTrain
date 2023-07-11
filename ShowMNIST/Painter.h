@@ -42,7 +42,8 @@ public:
 
 	void paintText(
 		HDC deviceContext,
-		const std::string text);
+		const std::string text,
+		COLORREF textColor);
 
 	void paintPlot(
 		HDC deviceContext, 

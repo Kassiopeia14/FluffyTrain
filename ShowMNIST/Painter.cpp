@@ -56,11 +56,12 @@ void Painter::beginText()
 
 void Painter::paintText(
 	HDC deviceContext,
-	const std::string text)
+	const std::string text,
+	COLORREF textColor)
 {
 	SetBkMode(deviceContext, TRANSPARENT);
 
-	SetTextColor(deviceContext, RGB(255, 0, 0));
+	SetTextColor(deviceContext, textColor);
 
 	TextOutA(deviceContext, imageSide * pixelSide, yTextOffset, &text[0], text.length());
 

@@ -26,6 +26,10 @@ private:
 
 	double maxPlotValue;
 
+	const COLORREF 
+		yellow,
+		red;
+
 public:
 	MessageHandler(
 		MNISTClassifier<SoftmaxEngine>& _mnistClassifier,
