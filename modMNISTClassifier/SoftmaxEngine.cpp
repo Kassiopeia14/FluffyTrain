@@ -145,7 +145,7 @@ void SoftmaxEngine::trainEpochFinalize()
 {
 	theta /= 2;
 
-	temperature /= 4;
+	//temperature /= 4;
 
 	resultMaxDWNorm = maxDWNorm;
 
