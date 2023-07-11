@@ -5,6 +5,8 @@ const char* SoftmaxEngine::name("Softmax");
 SoftmaxEngine::SoftmaxEngine():
 	theta(.1),
 	temperature(.1),
+	maxDWNorm(0.),
+	resultMaxDWNorm(25.5),
 	weights(initializeWeights()),
 	biases(initializeBiases())
 {
@@ -21,7 +23,7 @@ const char* SoftmaxEngine::getName()
 
 bool SoftmaxEngine::stopCondition(const size_t epoch)
 {
-	return epoch > 16;
+	return resultMaxDWNorm < 0.1;
 }
 
 std::vector<double> SoftmaxEngine::initializeWeights()
@@ -127,7 +129,13 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 
 			for (int i = 0; i < MNISTLoader::imageSize; i++)
 			{
-				weights[MNISTLoader::imageSize * k + i] -= theta * temperature * db[k] * imageVector[i];
+				const double dw = theta * temperature * db[k] * imageVector[i];
+				weights[MNISTLoader::imageSize * k + i] -= dw;
+
+				if (abs(dw) > maxDWNorm)
+				{
+					maxDWNorm = abs(dw);
+				}
 			}
 		}
 	}
@@ -136,7 +144,12 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 void SoftmaxEngine::trainEpochFinalize()
 {
 	theta /= 2;
+
 	temperature /= 4;
+
+	resultMaxDWNorm = maxDWNorm;
+
+	maxDWNorm = 0.;
 }
 
 void SoftmaxEngine::trainFinalize()

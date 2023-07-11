@@ -30,9 +30,11 @@ private:
 
 	static const char* name;
 
-	double 
+	double
 		theta,
-		temperature;
+		temperature,
+		maxDWNorm,
+		resultMaxDWNorm;
 
 	std::vector<double>
 		weights,
