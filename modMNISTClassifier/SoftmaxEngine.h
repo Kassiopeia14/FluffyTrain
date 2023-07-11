@@ -5,6 +5,7 @@
 #include <chrono>
 #include <array>
 #include <algorithm>
+#include <limits>
 
 #include "../modMNIST/MNISTLoader.h"
 
@@ -33,8 +34,9 @@ private:
 	double
 		theta,
 		temperature,
-		maxDWNorm,
-		resultMaxDWNorm;
+		wNorm,
+		cValue,
+		dWNorm;
 
 	std::vector<double>
 		weights,

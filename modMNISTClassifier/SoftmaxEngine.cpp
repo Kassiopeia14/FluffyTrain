@@ -5,8 +5,9 @@ const char* SoftmaxEngine::name("Softmax");
 SoftmaxEngine::SoftmaxEngine():
 	theta(.1),
 	temperature(.1),
-	maxDWNorm(0.),
-	resultMaxDWNorm(25.5),
+	wNorm(0.),
+	cValue(std::numeric_limits<double>::max()),
+	dWNorm(0.),
 	weights(initializeWeights()),
 	biases(initializeBiases())
 {
@@ -23,7 +24,7 @@ const char* SoftmaxEngine::getName()
 
 bool SoftmaxEngine::stopCondition(const size_t epoch)
 {
-	return resultMaxDWNorm < 0.1;
+	return cValue < 1.e-05;
 }
 
 std::vector<double> SoftmaxEngine::initializeWeights()
@@ -32,7 +33,7 @@ std::vector<double> SoftmaxEngine::initializeWeights()
 
 	for (auto weightValue = weightsValues.begin(); weightValue != weightsValues.end(); weightValue++)
 	{
-		*weightValue = (1. - ((double)(rand() % 2000)) / 1000) / 1000000;
+		*weightValue = 0.;// (1. - ((double)(rand() % 2000)) / 1000) / 1000000;
 	}
 
 	return weightsValues;
@@ -44,7 +45,7 @@ std::vector<double> SoftmaxEngine::initializeBiases()
 
 	for (auto biaseValue = biasesValues.begin(); biaseValue != biasesValues.end(); biaseValue++)
 	{
-		*biaseValue = (1. - ((double)(rand() % 2000)) / 1000) / 1000000;
+		*biaseValue = 0.;// (1. - ((double)(rand() % 2000)) / 1000) / 1000000;
 	}
 
 	return biasesValues;
@@ -132,9 +133,9 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 				const double dw = theta * temperature * db[k] * imageVector[i];
 				weights[MNISTLoader::imageSize * k + i] -= dw;
 
-				if (abs(dw) > maxDWNorm)
+				if (abs(dw) > dWNorm)
 				{
-					maxDWNorm = abs(dw);
+					dWNorm = abs(dw);
 				}
 			}
 		}
@@ -143,13 +144,27 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 
 void SoftmaxEngine::trainEpochFinalize()
 {
-	theta /= 2;
+	//theta /= 2;
 
 	//temperature /= 4;
 
-	resultMaxDWNorm = maxDWNorm;
+	double maxW = 0.;
 
-	maxDWNorm = 0.;
+	for (auto wItem = weights.begin(); wItem != weights.end(); wItem++)
+	{
+		if (abs(*wItem) > maxW)
+		{
+			maxW = *wItem;
+		}
+	}
+
+	wNorm = maxW;
+
+	cValue = dWNorm / wNorm;
+
+	theta = cValue;
+
+	dWNorm = 0.;
 }
 
 void SoftmaxEngine::trainFinalize()
