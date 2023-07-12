@@ -53,6 +53,8 @@ private:
 
 	double currentSuccessRate;
 
+	size_t batchSize;
+
 	bool 
 		classified,
 		tested;
@@ -92,6 +94,7 @@ MNISTClassifier<Engine>::MNISTClassifier(
 	mnistLoader(_mnistLoader),
 	lock(),
 	running(_running),
+	batchSize(60000),
 	currentImage(MNISTLoader::imageSize),
 	tested(false),
 	workThread(std::ref(*this))
@@ -150,6 +153,11 @@ void MNISTClassifier<Engine>::train()
 			realLabel = mnistLoader.getTrainLabel(imageNumber);
 
 		engine.train(image, realLabel);
+
+		if ((imageNumber % batchSize == batchSize - 1) || (imageNumber == trainImageCount - 1))
+		{
+			engine.batchTrainFinalize();
+		}
 
 		if (!lock.test_and_set())
 		{

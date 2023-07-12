@@ -4,12 +4,15 @@ const char* SoftmaxEngine::name("Softmax");
 
 SoftmaxEngine::SoftmaxEngine():
 	theta(.1),
-	temperature(.1),
+	temperature(1.),
 	wNorm(0.),
 	cValue(std::numeric_limits<double>::max()),
 	dWNorm(0.),
 	weights(initializeWeights()),
-	biases(initializeBiases())
+	epochWeights(weights.begin(), weights.end()),
+	newWeights(weights.begin(), weights.end()),
+	biases(initializeBiases()),
+	newBiases(biases.begin(), biases.end())
 {
 }
 
@@ -126,17 +129,12 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 	{
 		for (int k = 0; k < MNISTLoader::classCount; k++)
 		{
-			biases[k] -= theta * temperature * db[k];
+			newBiases[k] -= theta * temperature * db[k];
 
 			for (int i = 0; i < MNISTLoader::imageSize; i++)
 			{
 				const double dw = theta * temperature * db[k] * imageVector[i];
-				weights[MNISTLoader::imageSize * k + i] -= dw;
-
-				if (abs(dw) > dWNorm)
-				{
-					dWNorm = abs(dw);
-				}
+				newWeights[MNISTLoader::imageSize * k + i] -= dw;
 			}
 		}
 	}
@@ -144,9 +142,20 @@ void SoftmaxEngine::train(std::vector<unsigned char> imageVector, const size_t i
 
 void SoftmaxEngine::trainEpochFinalize()
 {
-	//theta /= 2;
+	//temperature *= 0.9;
 
-	//temperature /= 4;
+	auto epochWeightItem = epochWeights.begin();
+	for (auto weightItem = weights.begin(); weightItem != weights.end(); weightItem++, epochWeightItem++)
+	{
+		const double dw = *epochWeightItem - *weightItem;
+
+		if (abs(dw) > dWNorm)
+		{
+			dWNorm = abs(dw);
+		}
+
+		*epochWeightItem = *weightItem;
+	}
 
 	double maxW = 0.;
 
@@ -164,11 +173,32 @@ void SoftmaxEngine::trainEpochFinalize()
 
 	theta = cValue;
 
+	if (theta > 0.1)
+	{
+		theta = 0.1;
+	}
+
 	dWNorm = 0.;
+}
+
+void SoftmaxEngine::batchTrainFinalize()
+{
+	auto newBiaseItem = newBiases.begin();
+	for (auto biaseItem = biases.begin(); biaseItem != biases.end(); biaseItem++, newBiaseItem++)
+	{
+		*biaseItem = *newBiaseItem;
+	}
+
+	auto newWeightItem = newWeights.begin();
+	for (auto weightItem = weights.begin(); weightItem != weights.end(); weightItem++, newWeightItem++)
+	{
+		*weightItem = *newWeightItem;
+	}
 }
 
 void SoftmaxEngine::trainFinalize()
 {
+
 }
 
 size_t SoftmaxEngine::classify(std::vector<unsigned char> imageVector)

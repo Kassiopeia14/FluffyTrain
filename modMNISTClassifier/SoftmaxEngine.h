@@ -23,6 +23,8 @@ public:
 
 	void trainEpochFinalize();
 
+	void batchTrainFinalize();
+
 	void trainFinalize();
 
 	size_t classify(std::vector<unsigned char> imageVector);
@@ -40,7 +42,10 @@ private:
 
 	std::vector<double>
 		weights,
-		biases;
+		epochWeights,
+		newWeights,
+		biases,
+		newBiases;
 
 	static std::vector<double> initializeWeights();
 
