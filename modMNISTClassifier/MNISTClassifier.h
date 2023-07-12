@@ -94,7 +94,7 @@ MNISTClassifier<Engine>::MNISTClassifier(
 	mnistLoader(_mnistLoader),
 	lock(),
 	running(_running),
-	batchSize(60000),
+	batchSize(mnistLoader.getTrainImagesCount()),
 	currentImage(MNISTLoader::imageSize),
 	tested(false),
 	workThread(std::ref(*this))
@@ -143,9 +143,10 @@ void MNISTClassifier<Engine>::train()
 	lock.clear();
 
 	size_t
+		step = 0,
 		imageNumber = 0;
 
-	while (running.load() && (imageNumber < trainImageCount))
+	while (running.load() && (step < trainImageCount))
 	{
 		std::vector<unsigned char> image = mnistLoader.getTrainImage(imageNumber);
 
@@ -154,7 +155,7 @@ void MNISTClassifier<Engine>::train()
 
 		engine.train(image, realLabel);
 
-		if ((imageNumber % batchSize == batchSize - 1) || (imageNumber == trainImageCount - 1))
+		if (imageNumber % batchSize == batchSize - 1)
 		{
 			engine.batchTrainFinalize();
 		}
@@ -172,7 +173,8 @@ void MNISTClassifier<Engine>::train()
 			lock.clear();
 		}
 
-		imageNumber++;
+		step++;
+		imageNumber = step % trainImageCount;
 	}
 }
 
